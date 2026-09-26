@@ -43,7 +43,8 @@
   });
 
   document.title = S.meta.title;
-  document.head.append(h("meta", { name: "description", content: S.meta.description }));
+  const metaDesc = $('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute("content", S.meta.description);
   const initial = (S.hero.nome || "P").trim()[0].toUpperCase();
   document.head.append(h("link", { rel: "icon", href: "data:image/svg+xml," + encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="${T.accent}"/><text x="32" y="45" font-size="38" font-weight="800" text-anchor="middle" fill="#fff" font-family="sans-serif">${initial}</text></svg>`) }));
@@ -69,6 +70,44 @@
   const reveal = (el, i = 0) => { el.classList.add("reveal"); el.style.setProperty("--d", i * 0.09 + "s"); return el; };
   const card = (cls, ...kids) => h("div", { class: `card spot ${cls}` }, ...kids);
   const tilt = (el) => { if (T.tilt) el.classList.add("tilt"); return el; };
+
+  const SVG = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const ICONS = {
+    cloud: '<path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9.5a4.5 4.5 0 0 1-.5 8.5H7z"/>',
+    layers: '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/>',
+    refresh: '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/>',
+    chart: '<path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/>',
+    git: '<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="8" r="2.5"/><path d="M6 8.5v7"/><path d="M18 10.5c0 4-6 3-11 6"/>',
+    flask: '<path d="M9 3h6"/><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/>',
+    box: '<path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/>',
+    rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+    server: '<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01"/>',
+    terminal: '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+    shield: '<path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/>',
+    code: '<path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m14 4-4 16"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  };
+  function icon(name) {
+    if (!ICONS[name]) return name;
+    const el = h("span", { class: "svg-ico", "aria-hidden": "true" });
+    el.innerHTML = SVG(ICONS[name]);
+    return el;
+  }
+
+  // Seções que dependem da API: ficam escondidas até haver conteúdo e somem se vazias.
+  function renumber() {
+    [...document.querySelectorAll("main > section[id]:not(.hero)")].filter((sec) => !sec.hidden).forEach((sec, n) => {
+      const e = sec.querySelector(".eyebrow");
+      if (e) e.textContent = e.textContent.replace(/^\d+/, String(n + 1).padStart(2, "0"));
+    });
+  }
+  function resolveSection(el, id, hasItems) {
+    if (hasItems) { el.hidden = false; renumber(); return; }
+    el.remove();
+    const a = $('#nav a[href="#' + id + '"]');
+    if (a) a.remove();
+    renumber();
+  }
 
   const LABELS = { sobre: "Sobre", pipeline: "Pipeline", servicos: "Serviços", projetos: "Projetos", feed: "Feed", estudos: "Estudos", habilidades: "Skills", experiencia: "Trajetória", depoimentos: "Depoimentos", contato: "Contato" };
 
@@ -134,14 +173,14 @@
             c.texto.map((t) => h("p", {}, t)),
             c.cv && h("div", { class: "actions" }, h("a", { href: c.cv, class: "btn magnetic", download: "" }, "Baixar CV ↓"))), 1),
           h("div", { class: "stats" }, c.destaques.map((d, k) =>
-            reveal(card("stat", h("b", { "data-count": d.valor, "data-suffix": d.sufixo || "" }, "0" + (d.sufixo || "")), h("span", {}, d.rotulo)), k + 2)))));
+            reveal(card("stat", h("b", { "data-count": d.valor, "data-suffix": d.sufixo || "" }, d.valor + (d.sufixo || "")), h("span", {}, d.rotulo)), k + 2)))));
     },
 
     pipeline(i) {
       const c = S.pipeline, n = c.etapas.length;
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
       const stages = c.etapas.map((e) => h("li", { class: "stage" },
-        h("div", { class: "node" }, h("span", {}, e.icone)),
+        h("div", { class: "node" }, h("span", {}, icon(e.icone))),
         h("b", {}, e.nome), h("small", {}, e.ferramenta), h("em", { class: "st" }, "na fila")));
       const run = h("span", { class: "run" });
       const log = h("pre", { class: "pipe-log", "aria-hidden": "true" });
@@ -210,7 +249,7 @@
       const c = S.servicos;
       return section("servicos", i, c.titulo,
         h("div", { class: "services" }, c.itens.map((s, k) =>
-          reveal(tilt(card("service", h("div", { class: "ico" }, s.icone), h("h3", {}, s.titulo), h("p", {}, s.descricao))), k))));
+          reveal(tilt(card("service", h("div", { class: "ico" }, icon(s.icone)), h("h3", {}, s.titulo), h("p", {}, s.descricao))), k))));
     },
 
     projetos(i) {
@@ -250,12 +289,13 @@
 
     feed(i) {
       const c = S.feed;
-      const grid = h("div", { class: "feed-grid" }, h("p", { class: "empty-state" }, "Carregando…"));
+      const grid = h("div", { class: "feed-grid" });
       const box = section("feed", i, c.titulo, grid);
+      box.hidden = true;
 
       fetch("/api/posts").then((r) => (r.ok ? r.json() : [])).catch(() => []).then((posts) => {
-        if (!posts || !posts.length) { grid.replaceChildren(h("p", { class: "empty-state" }, c.vazio || "Em breve.")); return; }
-        grid.className = "feed-grid";
+        if (!Array.isArray(posts) || !posts.length) { resolveSection(box, "feed", false); return; }
+        resolveSection(box, "feed", true);
         grid.replaceChildren(...posts.map((p, k) => {
           const grad = p.cor ? `linear-gradient(135deg, ${p.cor[0]}, ${p.cor[1] || p.cor[0]})` : "";
           const imgs = (p.imagens || []).filter(Boolean);
@@ -290,15 +330,16 @@
     estudos(i) {
       const c = S.estudos;
       const STATUS_CLS = { "Em andamento": "on", "Concluído": "done", "Planejado": "planned" };
-      const grid = h("div", { class: "study-grid" }, h("p", { class: "empty-state" }, "Carregando…"));
+      const grid = h("div", { class: "study-grid" });
       const box = section("estudos", i, c.titulo, grid);
+      box.hidden = true;
 
       fetch("/api/estudos").then((r) => (r.ok ? r.json() : [])).catch(() => []).then((itens) => {
-        if (!itens || !itens.length) { grid.replaceChildren(h("p", { class: "empty-state" }, c.vazio || "Em breve.")); return; }
-        grid.className = "study-grid";
+        if (!Array.isArray(itens) || !itens.length) { resolveSection(box, "estudos", false); return; }
+        resolveSection(box, "estudos", true);
         grid.replaceChildren(...itens.map((s, k) =>
           reveal(tilt(card("study",
-            h("div", { class: "ico" }, s.icone || "📚"),
+            h("div", { class: "ico" }, icon(s.icone || "book")),
             h("div", { class: "study-body" },
               h("h3", {}, s.nome),
               s.categoria && h("p", {}, s.categoria),
@@ -312,12 +353,20 @@
 
     habilidades(i) {
       const c = S.habilidades;
+      const projetos = (S.projetos && S.projetos.itens) || [];
+      const usedIn = (keys) => projetos
+        .map((p, idx) => ({ p, idx }))
+        .filter(({ p }) => ((p.detalhes && p.detalhes.stack) || []).some((st) => (keys || []).some((k) => st.toLowerCase().includes(k.toLowerCase()))));
       return section("habilidades", i, c.titulo,
-        h("div", { class: "skills" }, c.grupos.map((g, k) =>
-          reveal(card("skill-group", h("h3", {}, g.nome),
-            g.itens.map((s, n) => h("div", { class: "skill" },
-              h("div", { class: "row" }, h("span", {}, s.nome), h("span", {}, s.nivel + "%")),
-              h("div", { class: "bar", style: `--w:${s.nivel / 100};--d:${0.15 + n * 0.12}s` }, h("i"))))), k))));
+        h("div", { class: "skills" }, c.niveis.map((n, k) =>
+          reveal(card("skill-group level-" + k, h("h3", {}, n.nome), n.desc && h("p", { class: "lvl-desc" }, n.desc),
+            h("ul", { class: "skill-list" }, n.itens.map((sk) => {
+              const uses = usedIn(sk.chave);
+              return h("li", {},
+                h("b", {}, sk.nome),
+                uses.length > 0 && h("span", { class: "uses" }, "usado em ", uses.map(({ p, idx }) =>
+                  h("button", { type: "button", class: "use-chip", title: "Ver " + p.nome, onclick: () => openProject(p, idx) }, p.nome))));
+            }))), k))));
     },
 
     experiencia(i) {
@@ -381,7 +430,9 @@
       return section("contato", i, c.titulo,
         h("div", { class: "contact-grid" },
           reveal(h("div", { class: "contact-info" }, h("p", {}, c.texto), mail,
-            h("div", { class: "socials" }, c.links.map((l) => link(l.rotulo + " ↗", l.url, "btn magnetic"))))),
+            h("div", { class: "socials" },
+              (c.cv || S.sobre.cv) && h("a", { href: c.cv || S.sobre.cv, class: "btn primary magnetic", download: "" }, "Baixar currículo ↓"),
+              c.links.map((l) => link(l.rotulo + " ↗", l.url, "btn magnetic"))))),
           reveal(form, 1)));
     },
   };

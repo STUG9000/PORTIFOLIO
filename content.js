@@ -77,12 +77,12 @@ window.SITE = {
     arquivo: "deploy.yml",
     feedback: "feedback: SLO e Error Budget",
     etapas: [
-      { icone: "💻", nome: "Commit", ferramenta: "Git", log: ["$ git push origin main", "→ workflow deploy.yml disparado"] },
-      { icone: "🧪", nome: "Build e testes", ferramenta: "GitHub Actions", log: ["$ go build ./... && go test ./...", "✓ ok  todos os testes passaram"] },
-      { icone: "🐳", nome: "Imagem", ferramenta: "Docker", log: ["$ docker build -t app:$RUN .", "✓ imagem app:$RUN enviada ao registry"] },
-      { icone: "🏗️", nome: "Infraestrutura", ferramenta: "Terraform + Ansible", log: ["$ terraform apply -auto-approve", "$ ansible-playbook -i hosts.yml site.yml", "✓ infra provisionada e configurada"] },
-      { icone: "🚀", nome: "Deploy", ferramenta: "EC2 · ECS", log: ["$ aws ecs update-service --force-new-deployment", "✓ GET /health → 200 OK"] },
-      { icone: "📈", nome: "Observabilidade", ferramenta: "OpenTelemetry · Grafana", log: ["→ métricas e traces chegando no Grafana", "✓ SLO 99,9% dentro do error budget"] },
+      { icone: "git", nome: "Commit", ferramenta: "Git", log: ["$ git push origin main", "→ workflow deploy.yml disparado"] },
+      { icone: "flask", nome: "Build e testes", ferramenta: "GitHub Actions", log: ["$ go build ./... && go test ./...", "✓ ok  todos os testes passaram"] },
+      { icone: "box", nome: "Imagem", ferramenta: "Docker", log: ["$ docker build -t app:$RUN .", "✓ imagem app:$RUN enviada ao registry"] },
+      { icone: "layers", nome: "Infraestrutura", ferramenta: "Terraform + Ansible", log: ["$ terraform apply -auto-approve", "$ ansible-playbook -i hosts.yml site.yml", "✓ infra provisionada e configurada"] },
+      { icone: "rocket", nome: "Deploy", ferramenta: "EC2 · ECS", log: ["$ aws ecs update-service --force-new-deployment", "✓ GET /health → 200 OK"] },
+      { icone: "chart", nome: "Observabilidade", ferramenta: "OpenTelemetry · Grafana", log: ["→ métricas e traces chegando no Grafana", "✓ SLO 99,9% dentro do error budget"] },
     ],
   },
 
@@ -90,10 +90,11 @@ window.SITE = {
   servicos: {
     titulo: "O que eu faço",
     itens: [
-      { icone: "☁️", titulo: "Cloud AWS", descricao: "Provisionamento e deploy em EC2, ECS e RDS." },
-      { icone: "🏗️", titulo: "Infraestrutura como Código", descricao: "Terraform para criar a infra e Ansible para configurá-la, tudo versionado." },
-      { icone: "🔄", titulo: "CI/CD", descricao: "Pipelines no GitHub Actions: build, testes, imagem Docker, deploy e teste de carga." },
-      { icone: "📈", titulo: "SRE & Observabilidade", descricao: "Health checks, métricas, rollback, SLOs e monitoramento com OpenTelemetry e Grafana." },
+      // "icone": cloud, layers, refresh, chart, git, flask, box, rocket, server, terminal, shield, code, book
+      { icone: "cloud", titulo: "Cloud AWS", descricao: "Provisionamento e deploy em EC2, ECS e RDS." },
+      { icone: "layers", titulo: "Infraestrutura como Código", descricao: "Terraform para criar a infra e Ansible para configurá-la, tudo versionado." },
+      { icone: "refresh", titulo: "CI/CD", descricao: "Pipelines no GitHub Actions: build, testes, imagem Docker, deploy e teste de carga." },
+      { icone: "chart", titulo: "SRE & Observabilidade", descricao: "Health checks, métricas, rollback, SLOs e monitoramento com OpenTelemetry e Grafana." },
     ],
   },
 
@@ -191,11 +192,10 @@ window.SITE = {
   // ---------- Feed — fotos e posts sobre os projetos ----------
   // Os posts em si NÃO se editam aqui: publique, edite e apague pelo
   // painel /admin (peça a senha combinada com a IA). Aqui só o título
-  // do menu e um texto de reserva caso a API não responda.
+  // do menu. Se não houver posts, a seção some sozinha.
   feed: {
     titulo: "Atualizações",
     menu: "Feed",
-    vazio: "Em breve, posts com fotos dos projetos por aqui.",
   },
 
   // ---------- Estudando agora ----------
@@ -203,17 +203,42 @@ window.SITE = {
   estudos: {
     titulo: "Estudando agora",
     menu: "Estudos",
-    vazio: "Nada listado no momento.",
   },
 
-  // ---------- Habilidades (nivel de 0 a 100) ----------
-  // Os níveis são uma estimativa inicial: ajuste para o que você acha justo.
+  // ---------- Habilidades, agrupadas por nível ----------
+  // "chave": palavras procuradas na stack dos projetos; onde houver, aparece
+  // "usado em <projeto>" (clicável). Mova as skills entre os níveis conforme a
+  // sua experiência real.
   habilidades: {
     titulo: "Habilidades",
-    grupos: [
-      { nome: "Cloud & IaC", itens: [{ nome: "AWS (EC2, ECS, RDS)", nivel: 75 }, { nome: "Terraform", nivel: 75 }, { nome: "Ansible", nivel: 80 }] },
-      { nome: "Containers & CI/CD", itens: [{ nome: "Docker", nivel: 80 }, { nome: "GitHub Actions", nivel: 80 }, { nome: "Kubernetes", nivel: 50 }] },
-      { nome: "SRE & Sistemas", itens: [{ nome: "Linux & Bash", nivel: 80 }, { nome: "Observabilidade", nivel: 60 }, { nome: "Redes (VLANs)", nivel: 65 }] },
+    niveis: [
+      {
+        nome: "Uso frequente",
+        desc: "O que uso nos meus projetos e pipelines.",
+        itens: [
+          { nome: "AWS (EC2, ECS, RDS)", chave: ["AWS", "EC2", "ECS"] },
+          { nome: "Terraform", chave: ["Terraform"] },
+          { nome: "Ansible", chave: ["Ansible"] },
+          { nome: "Docker", chave: ["Docker"] },
+          { nome: "GitHub Actions", chave: ["GitHub Actions"] },
+          { nome: "Linux & Bash", chave: ["Bash", "Ubuntu"] },
+        ],
+      },
+      {
+        nome: "Já usei em projetos",
+        desc: "Tenho prática, mas em menor escala.",
+        itens: [
+          { nome: "Observabilidade (OpenTelemetry, Grafana)", chave: ["Grafana", "OpenTelemetry"] },
+          { nome: "Redes (VLANs)", chave: ["VLAN"] },
+        ],
+      },
+      {
+        nome: "Estudando",
+        desc: "Em aprendizado agora.",
+        itens: [
+          { nome: "Kubernetes", chave: ["Kubernetes"] },
+        ],
+      },
     ],
   },
 
@@ -241,6 +266,7 @@ window.SITE = {
     // Para o formulário enviar de verdade, crie um form em formspree.io e cole aqui
     // o endpoint (ex.: "https://formspree.io/f/abcdwxyz"). Vazio = abre seu app de e-mail.
     formEndpoint: "",
+    cv: "",   // ex.: "cv-gabriel-stuginski.pdf" (coloque o PDF na raiz do projeto); "" oculta o botão
     links: [
       { rotulo: "GitHub", url: "https://github.com/STUG9000" },
       // { rotulo: "LinkedIn", url: "https://linkedin.com/in/SEU-USUARIO" },
