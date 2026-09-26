@@ -39,7 +39,7 @@ window.SITE = {
     roles: ["DevOps & SRE", "Infraestrutura como Código", "Pipelines de CI/CD", "AWS · Terraform · Ansible"],
     resumo: "Analista de Sistemas formado, com foco em DevOps e SRE. Gosto de transformar deploy manual em pipeline e servidor \"configurado na mão\" em playbook versionado.",
     status: "Aberto a oportunidades",            // "" para ocultar
-    foto: "img/eu.jpg",                          // "" mostra a inicial do nome
+    foto: "",                                    // ex.: "img/eu.jpg"  ("" mostra a inicial do nome)
     badges: ["AWS", "Terraform", "Ansible", "Docker"],
     botoes: [
       { texto: "Ver projetos", link: "#projetos", primario: true },
