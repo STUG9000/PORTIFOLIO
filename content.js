@@ -73,17 +73,26 @@ window.SITE = {
   pipeline: {
     titulo: "Do commit à produção",
     menu: "Pipeline",
-    texto: "Meu fluxo: trabalho na branch dev e abro um pull request para a main. A CI roda de novo, a imagem é construída, o deploy espera aprovação e um smoke test confirma que a versão nova está no ar.",
+    texto: "Meu fluxo: trabalho na branch dev e abro um pull request para a main. A CI roda de novo, a imagem é construída, a infra é aplicada, o deploy espera aprovação e um smoke test confirma que a versão nova está no ar. Se ele falhar, o rollback é automático.",
     arquivo: "cd-production.yml",
+    arquivoUrl: "",                          // link do arquivo real no GitHub (só funciona se o repositório for público)
+    projeto: "baseado no Costura_pro",       // "" para ocultar
     feedback: "feedback: SLO e Error Budget",
+    // A cada "cada" execuções, a etapa "etapa" falha e a animação mostra o rollback.
+    falha: {
+      etapa: "Smoke test",
+      cada: 3,
+      log: ["✗ HTTP 503 — health check falhou após 3 min", "↩ rollback automático: app:$PREV restaurada", "✓ versão anterior no ar · deploy revertido"],
+    },
     etapas: [
       { icone: "git", nome: "Commit", ferramenta: "branch dev", log: ["$ git push origin dev", "→ CI disparada na branch dev"] },
-      { icone: "code", nome: "Pull request", ferramenta: "dev → main", log: ["$ gh pr create --base main --head dev", "✓ CI verde: lint e testes passaram", "$ git merge dev → main"] },
-      { icone: "box", nome: "Build & Push", ferramenta: "Docker · Docker Hub", log: ["$ docker buildx build -t app:$RUN --push .", "✓ imagem app:$RUN publicada no Docker Hub"] },
+      { icone: "code", nome: "Pull request", ferramenta: "dev → main", log: ["$ gh pr create --base main --head dev", "$ gh pr merge --merge", "✓ CI verde e PR mergeado na main"] },
+      { icone: "box", nome: "Build & Push", ferramenta: "Docker · Docker Hub", log: ["$ docker buildx build -t app:$SHA --push .", "✓ imagem app:$SHA publicada no Docker Hub"] },
+      { icone: "layers", nome: "Infra", ferramenta: "Terraform plan · apply", log: ["$ terraform plan -out=tfplan", "$ terraform apply tfplan", "✓ infra sem drift (0 to change)"] },
       { icone: "shield", nome: "Aprovação", ferramenta: "GitHub Environments", log: ["→ ambiente production aguardando aprovação", "✓ deploy aprovado"] },
-      { icone: "rocket", nome: "Deploy", ferramenta: "Ansible · EC2", log: ["$ ansible-playbook -i production.yml playbook.yml", "✓ container app:$RUN atualizado na EC2"] },
+      { icone: "rocket", nome: "Deploy", ferramenta: "Ansible · EC2", log: ["$ ansible-playbook -i production.yml playbook.yml", "✓ container app:$SHA atualizado na EC2"] },
       { icone: "flask", nome: "Smoke test", ferramenta: "curl · /api/health", log: ["$ curl -s https://app/api/health  (retry até 3 min)", "✓ HTTP 200 — deploy OK"] },
-      { icone: "chart", nome: "Observabilidade", ferramenta: "OpenTelemetry · Grafana", log: ["→ métricas e traces chegando no Grafana", "✓ SLO 99,9% dentro do error budget"] },
+      { icone: "chart", nome: "Pós-deploy", ferramenta: "OpenTelemetry · Grafana", log: ["→ métricas e traces chegando no Grafana", "✓ SLO 99,9% dentro do error budget"] },
     ],
   },
 

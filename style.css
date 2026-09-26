@@ -362,7 +362,7 @@ footer { padding: 2.5rem 1.25rem; text-align: center; color: var(--muted); font-
 .gallery img { width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block; }
 
 /* ============ Pipeline ============ */
-:root { --ok: #16a34a; --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace; }
+:root { --ok: #16a34a; --bad: #ef4444; --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace; }
 :root[data-mode="dark"] { --ok: #4ade80; }
 .section-lead { max-width: 60ch; color: var(--muted); font-size: 1.1rem; margin: -1.8rem 0 2.4rem; }
 
@@ -376,6 +376,11 @@ footer { padding: 2.5rem 1.25rem; text-align: center; color: var(--muted); font-
 .pipe-head .run::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 1.2s ease-in-out infinite; }
 .pipe-head .run.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
 .pipe-head .run.ok::before { animation: none; }
+.pipe-head .run.fail { color: var(--bad); background: color-mix(in srgb, var(--bad) 14%, transparent); }
+.pipe-head .run.fail::before { animation: none; }
+.pipe-head code a { color: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
+.pipe-head code a:hover { color: var(--accent2); }
+.pipe-proj { font-size: .76rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: .15rem .6rem; white-space: nowrap; }
 @keyframes pulse { 50% { opacity: .25; } }
 
 .pipe-body { padding: 2.4rem 1.4rem 2.2rem; }
@@ -396,6 +401,13 @@ footer { padding: 2.5rem 1.25rem; text-align: center; color: var(--muted); font-
 .stage.done .node { filter: none; opacity: 1; border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--surface-solid)); }
 .stage.done .node::before { content: "✓"; position: absolute; right: -5px; bottom: -3px; width: 21px; height: 21px; border-radius: 50%; display: grid; place-items: center; font-size: .7rem; font-weight: 800; color: #fff; background: var(--ok); box-shadow: 0 0 0 3px var(--surface-solid); animation: pop .4s var(--ease); }
 .stage.done .st { color: var(--ok); }
+.stage.fail .node { filter: none; opacity: 1; border-color: var(--bad); background: color-mix(in srgb, var(--bad) 16%, var(--surface-solid)); box-shadow: 0 0 0 6px color-mix(in srgb, var(--bad) 16%, transparent); }
+.stage.fail .node::before { content: "✗"; position: absolute; right: -5px; bottom: -3px; width: 21px; height: 21px; border-radius: 50%; display: grid; place-items: center; font-size: .7rem; font-weight: 800; color: #fff; background: var(--bad); box-shadow: 0 0 0 3px var(--surface-solid); animation: pop .4s var(--ease); }
+.stage.fail .st { color: var(--bad); }
+.stage.skip .node { opacity: .35; }
+.stage.skip .st { color: var(--muted); font-style: italic; }
+.failed .rail i { background: linear-gradient(90deg, var(--accent), var(--bad)); }
+.failed .rail i::after { background: var(--bad); box-shadow: 0 0 14px 4px color-mix(in srgb, var(--bad) 70%, transparent); }
 @keyframes pop { from { transform: scale(0); } }
 
 /* esteira entre as etapas + "pacote" que percorre */
@@ -426,25 +438,26 @@ footer { padding: 2.5rem 1.25rem; text-align: center; color: var(--muted); font-
 .pipe-log .cmd { color: var(--text); }
 .pipe-log .info { color: var(--accent2); }
 .pipe-log .ok { color: var(--ok); }
+.pipe-log .err { color: var(--bad); }
+.pipe-log .warn { color: #f5a524; }
 @keyframes logIn { from { opacity: 0; translate: -8px 0; } }
 
 @media (max-width: 760px) {
-  .pipe-body { padding: 1.6rem 1.2rem; }
-  .stages { grid-template-columns: 1fr; gap: 1.1rem; text-align: left; }
-  .stage { grid-template-columns: 58px 1fr auto; column-gap: 1rem; row-gap: 0; align-items: center; justify-items: start; }
-  .stage .node { grid-row: span 2; margin: 0; }
-  .stage b { align-self: end; }
-  .stage small { align-self: start; }
-  .stage .st { grid-row: 1 / span 2; grid-column: 3; margin: 0; }
-  .rail { top: 29px; bottom: 29px; left: 28px; right: auto; width: 3px; height: auto; }
-  .rail i { width: 100%; height: calc(var(--pp) * 100%); }
-  .rail i::after { right: auto; left: 50%; top: auto; bottom: -6px; margin: 0 0 0 -6.5px; }
-  .loop-wrap { height: auto; margin: 1.4rem 0 0; border: 0; text-align: center; }
+  .pipe-body { padding: 1.2rem 1rem 1.4rem; }
+  .pipe-proj { display: none; }
+  .stages { grid-template-columns: 1fr 1fr; gap: 1rem .7rem; text-align: left; }
+  .stage { grid-template-columns: 40px 1fr; column-gap: .6rem; row-gap: 0; align-items: center; justify-items: start; }
+  .stage .node { grid-row: span 3; width: 40px; height: 40px; margin: 0; font-size: 1.05rem; }
+  .stage b { font-size: .84rem; align-self: end; }
+  .stage small { font-size: .68rem; align-self: center; line-height: 1.25; }
+  .stage .st { grid-row: auto; grid-column: 2; margin: 0; font-size: .68rem; align-self: start; }
+  .stage.run .node::after { inset: -6px; }
+  .rail { display: none; }
+  .loop-wrap { height: auto; margin: 1.1rem 0 0; border: 0; text-align: center; }
   .loop-wrap::before, .loop-wrap::after { display: none; }
   .loop-label { position: static; translate: none; display: inline-block; white-space: normal; }
-  .pipe-log { font-size: .74rem; height: calc(7 * 1.65em + 2rem); }
+  .pipe-log { font-size: .72rem; height: calc(5 * 1.65em + 2rem); }
 }
-
 /* ============ Responsivo ============ */
 @media (max-width: 860px) {
   section { padding-block: 4.5rem; }

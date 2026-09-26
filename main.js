@@ -187,40 +187,61 @@
       const box = h("div", { class: "card pipe", style: `--n:${n};--pp:0` },
         h("div", { class: "pipe-head" },
           h("span", { class: "dots" }, h("i"), h("i"), h("i")),
-          h("code", {}, ".github/workflows/" + (c.arquivo || "deploy.yml")), run),
+          h("code", {}, c.arquivoUrl ? link(".github/workflows/" + (c.arquivo || "deploy.yml"), c.arquivoUrl) : ".github/workflows/" + (c.arquivo || "deploy.yml")),
+          c.projeto && h("span", { class: "pipe-proj" }, c.projeto), run),
         h("div", { class: "pipe-body" },
           h("div", { class: "pipe-flow" }, h("div", { class: "rail", "aria-hidden": "true" }, h("i")), h("ol", { class: "stages" }, stages)),
           c.feedback && h("div", { class: "loop-wrap" }, h("span", { class: "loop-label" }, "↺ " + c.feedback))),
         log);
 
-      let runNo = 42, step = -1, timer = null;
+      const F = c.falha;
+      const failIdx = F ? c.etapas.findIndex((e) => e.nome === F.etapa) : -1;
+      let runNo = 41, step = -1, timer = null, failed = false, willFail = false;
+      const sha = (k) => ((k * 2654435761) >>> 0).toString(16).padStart(8, "0").slice(0, 7);
       const lines = [];
       const print = (t) => {
-        lines.push(t.replace(/\$RUN/g, "v" + runNo));
+        lines.push(t.replace(/\$SHA/g, sha(runNo)).replace(/\$PREV/g, sha(runNo - 1)).replace(/\$RUN/g, String(runNo)));
         while (lines.length > 7) lines.shift();
-        log.replaceChildren(...lines.map((l) => h("span", { class: l[0] === "✓" ? "ok" : l[0] === "$" ? "cmd" : "info" }, l)));
+        const cls = { "✓": "ok", "✗": "err", "↩": "warn", "$": "cmd" };
+        log.replaceChildren(...lines.map((l) => h("span", { class: cls[l[0]] || "info" }, l)));
       };
       const isOk = (l) => l[0] === "✓";
       function paint() {
         const finished = step >= n;
         stages.forEach((s, k) => {
-          const done = k < step || finished, active = k === step;
+          const isFail = failed && k === failIdx, isSkip = failed && k > failIdx;
+          const done = failed ? k < failIdx : k < step || finished;
+          const active = !finished && k === step;
           s.classList.toggle("done", done);
           s.classList.toggle("run", active);
-          s.querySelector(".st").textContent = done ? "✓ ok" : active ? "rodando…" : "na fila";
+          s.classList.toggle("fail", isFail);
+          s.classList.toggle("skip", isSkip);
+          s.querySelector(".st").textContent = isFail ? "✗ falhou" : isSkip ? "cancelado" : done ? "✓ ok" : active ? "rodando…" : "na fila";
         });
-        box.style.setProperty("--pp", Math.max(0, Math.min(step, n - 1)) / (n - 1));
-        box.classList.toggle("looping", finished);
-        run.className = "run" + (finished ? " ok" : "");
-        run.textContent = `#${runNo} · ` + (finished ? "sucesso" : "em execução");
+        box.style.setProperty("--pp", Math.max(0, Math.min(failed ? failIdx : step, n - 1)) / (n - 1));
+        box.classList.toggle("looping", finished && !failed);
+        box.classList.toggle("failed", failed);
+        run.className = "run" + (failed ? " fail" : finished ? " ok" : "");
+        run.textContent = `#${runNo} · ` + (failed ? "rollback" : finished ? "sucesso" : "em execução");
       }
       function tick() {
         if (step >= n) {
-          runNo++; step = -1; lines.length = 0;
+          runNo++; step = -1; lines.length = 0; failed = false;
           box.classList.add("snap");
           requestAnimationFrame(() => requestAnimationFrame(() => box.classList.remove("snap")));
         }
-        if (step >= 0) c.etapas[step].log.filter(isOk).forEach(print);
+        if (step === -1) willFail = !!F && failIdx >= 0 && runNo % (F.cada || 3) === 0;
+        if (step >= 0) {
+          if (willFail && step === failIdx) {
+            failed = true;
+            F.log.forEach(print);
+            step = n;
+            paint();
+            timer = setTimeout(tick, 4200);
+            return;
+          }
+          c.etapas[step].log.filter(isOk).forEach(print);
+        }
         step++;
         if (step < n) c.etapas[step].log.filter((l) => !isOk(l)).forEach(print);
         else print(`✓ pipeline #${runNo} concluída — de volta ao início`);
