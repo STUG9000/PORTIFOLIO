@@ -1,0 +1,19 @@
+# Tudo aqui NÃO é publicado no Cloudflare (só o site estático vai ao ar).
+node_modules
+package.json
+package-lock.json
+wrangler.jsonc
+.assetsignore
+.gitignore
+.git
+.github
+.vercel
+.vercelignore
+vercel.json
+.env*
+
+# Funções e painel da Vercel: não funcionam no Cloudflare
+api
+admin.html
+admin.css
+admin.js
