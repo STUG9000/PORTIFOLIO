@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR" data-mode="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel — Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+  <div id="loginView" class="admin-wrap login-wrap">
+    <form id="loginForm" class="card admin-card login-card">
+      <h1>Painel do portfólio</h1>
+      <p class="muted">Entre com a senha combinada para publicar posts e atualizar o que você está estudando.</p>
+      <div class="field">
+        <label for="pw">Senha</label>
+        <input id="pw" type="password" autocomplete="current-password" required autofocus>
+      </div>
+      <button class="btn primary" type="submit">Entrar</button>
+      <p id="loginError" class="error" hidden></p>
+    </form>
+  </div>
+
+  <div id="dashView" class="admin-wrap" hidden>
+    <header class="admin-header">
+      <h1>Painel do portfólio</h1>
+      <div class="admin-header-actions">
+        <a class="btn" href="index.html" target="_blank" rel="noopener">Ver site ↗</a>
+        <button id="logoutBtn" class="btn" type="button">Sair</button>
+      </div>
+    </header>
+
+    <nav class="admin-tabs" id="tabs">
+      <button class="tab active" data-tab="posts" type="button">Posts</button>
+      <button class="tab" data-tab="estudos" type="button">Estudando agora</button>
+    </nav>
+
+    <section id="tab-posts" class="admin-tab">
+      <form id="postForm" class="card admin-card">
+        <input type="hidden" id="postId">
+        <h2 id="postFormTitle">Novo post</h2>
+        <div class="field">
+          <label for="postTexto">Texto</label>
+          <textarea id="postTexto" rows="3" required placeholder="O que você fez / aprendeu / lançou…"></textarea>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="postData">Data (rótulo)</label>
+            <input id="postData" type="text" placeholder="Ex.: Setembro de 2026">
+          </div>
+          <div class="field">
+            <label for="postProjeto">Projeto (opcional)</label>
+            <input id="postProjeto" type="text" placeholder="Ex.: FinançasPro">
+          </div>
+        </div>
+        <div class="field">
+          <label for="postLink">Link (opcional)</label>
+          <input id="postLink" type="url" placeholder="https://…">
+        </div>
+        <div class="field">
+          <label for="postImg">Fotos (opcional, pode escolher várias)</label>
+          <input id="postImg" type="file" accept="image/*" multiple>
+          <p class="hint">A primeira foto é a capa. Com mais de uma, vira um carrossel no site — use as setas pra reordenar.</p>
+        </div>
+        <div id="postPhotos" class="photo-manager"></div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit">Publicar</button>
+          <button class="btn" type="button" id="postCancel" hidden>Cancelar edição</button>
+        </div>
+        <p id="postMsg" class="error" hidden></p>
+      </form>
+
+      <div id="postList" class="admin-list"></div>
+    </section>
+
+    <section id="tab-estudos" class="admin-tab" hidden>
+      <form id="studyForm" class="card admin-card">
+        <input type="hidden" id="studyId">
+        <h2 id="studyFormTitle">Novo item</h2>
+        <div class="field-row">
+          <div class="field">
+            <label for="studyNome">Nome</label>
+            <input id="studyNome" type="text" required placeholder="Ex.: Kubernetes">
+          </div>
+          <div class="field">
+            <label for="studyIcone">Emoji</label>
+            <input id="studyIcone" type="text" maxlength="4" placeholder="📚">
+          </div>
+        </div>
+        <div class="field">
+          <label for="studyCategoria">Descrição curta (opcional)</label>
+          <input id="studyCategoria" type="text" placeholder="Ex.: Orquestração de containers">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="studyStatus">Status</label>
+            <select id="studyStatus">
+              <option>Em andamento</option>
+              <option>Concluído</option>
+              <option>Planejado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="studyLink">Link (opcional)</label>
+            <input id="studyLink" type="url" placeholder="https://…">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit">Adicionar</button>
+          <button class="btn" type="button" id="studyCancel" hidden>Cancelar edição</button>
+        </div>
+        <p id="studyMsg" class="error" hidden></p>
+      </form>
+
+      <div id="studyList" class="admin-list"></div>
+    </section>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
