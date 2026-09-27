@@ -186,6 +186,23 @@ window.SITE = {
         },
       },
       {
+        nome: "CosturaPro",
+        descricao: "Sistema de gestão para ateliês de costura: pedidos em Kanban, cadastro de clientes, catálogo de serviços e relatórios.",
+        tags: ["Fullstack", "SaaS"],
+        link: "", repo: "", imagem: "img/costurapro-dashboard.png",
+        cor: ["#0ea5e9", "#6366f1"],
+        status: "Em desenvolvimento",
+        detalhes: {
+          papel: "Desenvolvedor Full-stack", ano: "2026",
+          longa: [
+            "Sistema de gestão para ateliês de costura e confecção: pedidos organizados em Kanban (aguardando, em produção, finalizado, entregue), cadastro de clientes, catálogo de serviços com preços e relatórios com indicadores financeiros e ranking de vendedores.",
+            "Ainda em desenvolvimento — é o projeto usado como referência na pipeline de CI/CD mostrada na seção anterior.",
+          ],
+          stack: [],
+          galeria: ["img/costurapro-relatorios.png"],
+        },
+      },
+      {
         nome: "SRE Nível 1",
         descricao: "Ciclo de vida de uma API em produção: testes, container, deploy com health check, rollback e monitoramento.",
         tags: ["SRE", "CI/CD", "Docker"],

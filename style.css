@@ -234,6 +234,12 @@ body.ready .ch { animation: rise .9s var(--ease) forwards; animation-delay: calc
 .project { cursor: pointer; display: flex; flex-direction: column; transition: opacity .9s var(--ease) var(--d, 0s), translate .9s var(--ease) var(--d, 0s), transform .2s ease-out, border-color .3s; }
 .project.featured { grid-column: span 2; }
 .cover { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--g, var(--grad)); }
+.proj-status {
+  position: absolute; top: .8rem; left: .8rem; z-index: 3; font-size: .74rem; font-weight: 700;
+  padding: .3rem .8rem; border-radius: 999px; color: #fff; background: color-mix(in srgb, var(--accent2) 55%, #000c);
+  backdrop-filter: blur(4px);
+}
+.proj-status.static { position: static; display: inline-block; margin: -.2rem 0 .4rem; color: var(--accent2); background: color-mix(in srgb, var(--accent2) 16%, transparent); }
 .project.featured .cover { aspect-ratio: 21 / 9; }
 .cover img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s var(--ease); }
 .project:hover .cover img, .project:hover .cover .num { transform: scale(1.08); }

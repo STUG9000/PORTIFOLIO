@@ -146,6 +146,7 @@
       h("div", { class: "m-cover", style: grad ? `--g:${grad}` : null }, p.imagem ? h("img", { src: p.imagem, alt: p.nome }) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
       h("div", { class: "m-body" },
         h("h3", { id: "modalTitle" }, p.nome),
+        p.status && h("span", { class: "proj-status static" }, p.status),
         (d.papel || d.ano) && h("div", { class: "m-meta" },
           d.papel && h("div", {}, "Função", h("b", {}, d.papel)),
           d.ano && h("div", {}, "Ano", h("b", {}, d.ano))),
@@ -307,6 +308,7 @@
             const grad = p.cor ? `linear-gradient(135deg, ${p.cor[0]}, ${p.cor[1] || p.cor[0]})` : "";
             const el = tilt(h("article", { class: "card spot project" + (p.destaque ? " featured" : ""), tabindex: 0, role: "button", "aria-label": "Abrir " + p.nome },
               h("div", { class: "cover", style: grad ? `--g:${grad}` : null },
+                p.status && h("span", { class: "proj-status" }, p.status),
                 p.imagem ? h("img", { src: p.imagem, alt: p.nome, loading: "lazy" }) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
               h("div", { class: "body" },
                 h("h3", {}, p.nome),
