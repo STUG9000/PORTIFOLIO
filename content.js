@@ -115,7 +115,7 @@ window.SITE = {
       {
         nome: "Srta Executiva",
         descricao: "Sistema de gestão para um ateliê de costura real: pedidos em Kanban, relatórios e exportação em PDF/Excel. Deu origem à ideia do CosturaPro.",
-        tags: ["Fullstack", "IaC"],
+        tags: ["Fullstack", "IaC", "AWS"],
         link: "",
         repo: "",
         imagem: "img/srtaexecutiva-relatorios.webp",
@@ -127,9 +127,9 @@ window.SITE = {
           longa: [
             "Sistema de gestão feito sob medida para a Srta Executiva, um ateliê de costura real: os pedidos passam por um quadro Kanban (aguardando, em produção, finalizado, entregue), com cadastro de clientes, catálogo de serviços e histórico de cada solicitação.",
             "Chegou a processar mais de 580 pedidos entregues em uso real pela equipe. Os relatórios têm exportação em PDF e Excel e aviso automático por WhatsApp. Foi este projeto que deu a ideia para o CosturaPro, uma versão mais ampla do mesmo conceito.",
-            "A infraestrutura usa Docker, Terraform e Ansible, com deploy manual (sem pipeline de CI/CD).",
+            "Roda em uma instância EC2 provisionada com Terraform e configurada com Ansible, com a aplicação em container Docker e deploy manual (sem pipeline de CI/CD). O banco é SQLite na própria instância: uma escolha deliberada para um sistema de um único ateliê, com poucos usuários simultâneos, que não justificava o custo e a operação de um banco gerenciado.",
           ],
-          stack: ["React 19", "TypeScript", "Express", "SQLite", "Docker", "Terraform", "Ansible"],
+          stack: ["React 19", "TypeScript", "Express", "SQLite", "Docker", "Terraform", "Ansible", "AWS EC2"],
           galeria: [
             "img/srtaexecutiva-login.webp",
             "img/srtaexecutiva-solicitacoes.webp",
@@ -153,7 +153,7 @@ window.SITE = {
             "O FinançasPro é uma aplicação web fullstack desenvolvida como projeto de conclusão de curso, com o objetivo de oferecer uma solução completa de controle financeiro pessoal. O sistema permite ao usuário cadastrar e acompanhar receitas e despesas, gerenciar cartões de crédito, definir orçamentos por categoria, criar metas de economia e visualizar transações em um quadro estilo Kanban.",
             "A aplicação foi construída com foco em boas práticas de desenvolvimento, segurança (autenticação JWT, RLS no banco de dados) e infraestrutura moderna, com deploy automatizado via CI/CD.",
           ],
-          stack: ["React 19", "TypeScript", "Supabase", "Docker", "AWS EC2", "GitHub Actions"],
+          stack: ["React 19", "TypeScript", "Supabase (Postgres)", "Docker", "AWS EC2", "GitHub Actions"],
           galeria: [
             "img/financaspro-transacoes.webp",
             "img/financaspro-cartoes.webp",
@@ -213,7 +213,7 @@ window.SITE = {
       {
         nome: "CosturaPro",
         descricao: "Sistema de gestão para ateliês de costura: pedidos em Kanban, cadastro de clientes, catálogo de serviços e relatórios.",
-        tags: ["Fullstack", "SaaS"],
+        tags: ["Fullstack", "SaaS", "AWS"],
         link: "", repo: "", imagem: "img/costurapro-dashboard.webp",
         cor: ["#0ea5e9", "#6366f1"],
         status: "Em desenvolvimento",
@@ -221,9 +221,9 @@ window.SITE = {
           papel: "Desenvolvedor Full-stack", ano: "2026",
           longa: [
             "Sistema de gestão para ateliês de costura e confecção: pedidos organizados em Kanban (aguardando, em produção, finalizado, entregue), cadastro de clientes, catálogo de serviços com preços e relatórios com indicadores financeiros e ranking de vendedores.",
-            "Ainda em desenvolvimento — é o projeto usado como referência na pipeline de CI/CD mostrada na seção anterior.",
+            "Ainda em desenvolvimento, e aqui o foco é a infraestrutura: deploy na AWS com ECS e banco no RDS, em vez do banco local usado na Srta Executiva. É o projeto usado como referência na pipeline de CI/CD mostrada na seção anterior.",
           ],
-          stack: [],
+          stack: ["Docker", "AWS ECS", "AWS RDS"],
           galeria: ["img/costurapro-relatorios.webp"],
         },
       },
