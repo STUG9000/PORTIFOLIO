@@ -125,8 +125,8 @@ window.SITE = {
           papel: "Desenvolvedor Fullstack & DevOps",
           ano: "TCC",
           longa: [
-            "Aplicação para controlar receitas, despesas, cartões, orçamentos por categoria, metas de economia e transações recorrentes, com dashboard, calendário e um quadro Kanban de despesas (em aberto, vencidas e pagas).",
-            "Foco em segurança (autenticação JWT, RLS no banco e proteção contra SQL Injection) e em infraestrutura moderna: aplicação containerizada com Docker e deploy em EC2 automatizado pelo GitHub Actions.",
+            "O FinançasPro é uma aplicação web fullstack desenvolvida como projeto de conclusão de curso, com o objetivo de oferecer uma solução completa de controle financeiro pessoal. O sistema permite ao usuário cadastrar e acompanhar receitas e despesas, gerenciar cartões de crédito, definir orçamentos por categoria, criar metas de economia e visualizar transações em um quadro estilo Kanban.",
+            "A aplicação foi construída com foco em boas práticas de desenvolvimento, segurança (autenticação JWT, RLS no banco de dados) e infraestrutura moderna, com deploy automatizado via CI/CD.",
           ],
           stack: ["React 19", "TypeScript", "Supabase", "Docker", "AWS EC2", "GitHub Actions"],
           galeria: [
