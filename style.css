@@ -105,7 +105,7 @@ body.has-cursor #cursorGlow, body.has-cursor #cursorRing { opacity: 1; }
 #nav a.active { color: var(--text); background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); }
 .icon-btn { border: 1px solid var(--border); background: var(--surface); color: var(--text); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: grid; place-items: center; transition: transform .3s var(--ease), border-color .2s; }
 .icon-btn:hover { border-color: var(--accent); transform: rotate(180deg); }
-.menu-btn { display: none; flex-direction: column; gap: 5px; }
+.menu-btn { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
 .menu-btn:hover { transform: none; }
 .menu-btn span { display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; transition: transform .3s var(--ease); }
 .menu-btn[aria-expanded="true"] span:first-child { transform: translateY(3.5px) rotate(45deg); }
@@ -134,7 +134,7 @@ body.has-cursor #cursorGlow, body.has-cursor #cursorRing { opacity: 1; }
 
 /* ============ Hero ============ */
 .hero { min-height: 100svh; display: flex; align-items: center; padding-block: 8rem 5rem; }
-.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 3rem; align-items: center; opacity: var(--ho, 1); translate: 0 var(--hy, 0); }
+.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 3rem; align-items: center; }
 .status { display: inline-flex; align-items: center; gap: .6rem; padding: .4rem .9rem; border: 1px solid var(--border); background: var(--surface); border-radius: 999px; font-size: .85rem; color: var(--muted); margin-bottom: 1.4rem; }
 .status i { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 #22c55e88; animation: pulse 2s infinite; }
 @keyframes pulse { 70% { box-shadow: 0 0 0 10px #22c55e00; } 100% { box-shadow: 0 0 0 0 #22c55e00; } }

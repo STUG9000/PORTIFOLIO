@@ -171,7 +171,7 @@
   // ---------- Rolagem: progresso, nav, timeline, parallax ----------
   function scrollFx(sectionIds) {
     const bar = document.documentElement, top = $("#topbar");
-    const links = $$("#nav a"), hero = $(".hero-grid"), tl = $(".timeline"), jobs = $$(".job");
+    const links = $$("#nav a"), tl = $(".timeline"), jobs = $$(".job");
     const blobs = $$(".blob");
     let lastY = scrollY, ticking = false;
 
@@ -184,11 +184,6 @@
       top.classList.toggle("hide", y > lastY && y > 240 && !menuOpen);
       lastY = y;
 
-      if (hero && !reduce && !narrow) {
-        const p = clamp(y / (innerHeight * 0.8), 0, 1);
-        hero.style.setProperty("--ho", (1 - p).toFixed(3));
-        hero.style.setProperty("--hy", p * 60 + "px");
-      }
       if (!reduce && finePointer) blobs.forEach((b, i) => b.style.setProperty("translate", `0 ${y * (0.05 + i * 0.03) * -1}px`));
 
       if (tl) {
