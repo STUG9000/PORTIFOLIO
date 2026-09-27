@@ -48,10 +48,10 @@ section { padding-block: 6.5rem; position: relative; }
 :root:not([data-mode="dark"]) #bg { opacity: .45; }
 .blob {
   position: fixed; z-index: 0; pointer-events: none; border-radius: 50%;
-  filter: blur(90px); opacity: .35; will-change: transform;
+  filter: blur(90px); opacity: .2; will-change: transform;
   transition: translate .6s var(--ease);
 }
-:root:not([data-mode="dark"]) .blob { opacity: .22; }
+:root:not([data-mode="dark"]) .blob { opacity: .13; }
 .b1 { width: 46vmax; height: 46vmax; left: -14vmax; top: -12vmax; background: var(--accent); animation: drift 22s ease-in-out infinite alternate; }
 .b2 { width: 38vmax; height: 38vmax; right: -12vmax; top: 30vh; background: var(--accent2); animation: drift 26s ease-in-out infinite alternate-reverse; }
 .b3 { width: 30vmax; height: 30vmax; left: 25vw; bottom: -16vmax; background: color-mix(in srgb, var(--accent) 60%, var(--accent2)); animation: drift 30s ease-in-out infinite alternate; }

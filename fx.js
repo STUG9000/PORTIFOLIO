@@ -184,7 +184,7 @@
       top.classList.toggle("hide", y > lastY && y > 240 && !menuOpen);
       lastY = y;
 
-      if (hero && !reduce) {
+      if (hero && !reduce && !narrow) {
         const p = clamp(y / (innerHeight * 0.8), 0, 1);
         hero.style.setProperty("--ho", (1 - p).toFixed(3));
         hero.style.setProperty("--hy", p * 60 + "px");
