@@ -121,6 +121,24 @@
   // ---------- Modal de projeto ----------
   const modal = $("#modal");
   let lastFocus = null;
+
+  function buildGallery(imgs, alt) {
+    if (!imgs || !imgs.length) return null;
+    if (imgs.length === 1) return h("div", { class: "gallery" }, h("img", { src: imgs[0], alt, loading: "lazy" }));
+    const slides = imgs.map((src, n) => h("img", { src, alt: alt + " — imagem " + (n + 1), loading: "lazy", class: n === 0 ? "active" : "" }));
+    const dots = imgs.map((_, n) => h("button", { type: "button", "aria-label": "Ir para imagem " + (n + 1), class: n === 0 ? "active" : "" }));
+    let cur = 0;
+    const go = (n) => {
+      cur = (n + imgs.length) % imgs.length;
+      slides.forEach((s, i) => s.classList.toggle("active", i === cur));
+      dots.forEach((d, i) => d.classList.toggle("active", i === cur));
+    };
+    dots.forEach((d, n) => (d.onclick = () => go(n)));
+    const prev = h("button", { type: "button", class: "g-nav g-prev", "aria-label": "Imagem anterior", onclick: () => go(cur - 1) }, "‹");
+    const next = h("button", { type: "button", class: "g-nav g-next", "aria-label": "Próxima imagem", onclick: () => go(cur + 1) }, "›");
+    return h("div", { class: "gallery carousel" }, h("div", { class: "g-frame" }, ...slides, prev, next), h("div", { class: "g-dots" }, dots));
+  }
+
   function openProject(p, idx) {
     const d = p.detalhes || {};
     const grad = p.cor ? `linear-gradient(135deg, ${p.cor[0]}, ${p.cor[1] || p.cor[0]})` : "";
@@ -133,7 +151,7 @@
           d.ano && h("div", {}, "Ano", h("b", {}, d.ano))),
         h("div", { class: "text" }, (d.longa && d.longa.length ? d.longa : [p.descricao]).map((t) => h("p", {}, t))),
         d.stack && d.stack.length > 0 && h("div", { class: "tags" }, d.stack.map((x) => h("span", { class: "tag" }, x))),
-        d.galeria && d.galeria.length > 0 && h("div", { class: "gallery" }, d.galeria.map((src) => h("img", { src, alt: p.nome, loading: "lazy" }))),
+        buildGallery(d.galeria, p.nome),
         (p.link || p.repo) && h("div", { class: "actions" },
           p.link && link("Ver projeto ↗", p.link, "btn primary"),
           p.repo && link("Código ↗", p.repo, "btn"))));
