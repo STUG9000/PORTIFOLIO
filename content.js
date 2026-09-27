@@ -275,7 +275,7 @@ window.SITE = {
     email: "stug9000@gmail.com",
     // Para o formulário enviar de verdade, crie um form em formspree.io e cole aqui
     // o endpoint (ex.: "https://formspree.io/f/abcdwxyz"). Vazio = abre seu app de e-mail.
-    formEndpoint: "",
+    formEndpoint: "https://formspree.io/f/xeaopnjn",
     cv: "",   // ex.: "cv-gabriel-stuginski.pdf" (coloque o PDF na raiz do projeto); "" oculta o botão
     links: [
       { rotulo: "GitHub", url: "https://github.com/STUG9000" },
