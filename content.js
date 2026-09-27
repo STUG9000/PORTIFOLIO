@@ -114,22 +114,22 @@ window.SITE = {
     itens: [
       {
         nome: "Srta Executiva",
-        descricao: "Sistema de gestão em produção real para um ateliê de costura: pedidos em Kanban, relatórios com insights por IA e exportação em PDF/Excel.",
+        descricao: "Sistema de gestão para um ateliê de costura real: pedidos em Kanban, relatórios e exportação em PDF/Excel. Deu origem à ideia do CosturaPro.",
         tags: ["Fullstack", "IaC"],
         link: "",
         repo: "",
         imagem: "img/srtaexecutiva-relatorios.png",
         cor: ["#7c3aed", "#a855f7"],
-        status: "Em produção",
+        status: "Concluído",
         destaque: true,
         detalhes: {
           papel: "Desenvolvedor Full-stack & DevOps",
           longa: [
             "Sistema de gestão feito sob medida para a Srta Executiva, um ateliê de costura real: os pedidos passam por um quadro Kanban (aguardando, em produção, finalizado, entregue), com cadastro de clientes, catálogo de serviços e histórico de cada solicitação.",
-            "Já processou mais de 580 pedidos entregues em uso real pela equipe. Os relatórios têm insights gerados por IA (Google Gemini) sobre faturamento e retenção de clientes, além de exportação em PDF e Excel e aviso automático por WhatsApp.",
-            "A infraestrutura usa Docker, Terraform e Ansible, hoje com deploy manual (sem pipeline de CI/CD ainda).",
+            "Chegou a processar mais de 580 pedidos entregues em uso real pela equipe. Os relatórios têm exportação em PDF e Excel e aviso automático por WhatsApp. Foi este projeto que deu a ideia para o CosturaPro, uma versão mais ampla do mesmo conceito.",
+            "A infraestrutura usa Docker, Terraform e Ansible, com deploy manual (sem pipeline de CI/CD).",
           ],
-          stack: ["React 19", "TypeScript", "Express", "SQLite", "Docker", "Terraform", "Ansible", "Google Gemini API"],
+          stack: ["React 19", "TypeScript", "Express", "SQLite", "Docker", "Terraform", "Ansible"],
           galeria: [
             "img/srtaexecutiva-login.png",
             "img/srtaexecutiva-solicitacoes.png",
