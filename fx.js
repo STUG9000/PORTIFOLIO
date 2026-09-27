@@ -7,6 +7,7 @@
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
   // ---------- Revelar ao rolar ----------
+  const narrow = matchMedia("(max-width: 640px)").matches;
   let revealIO;
   function observe(scope = document) {
     if (!revealIO) {
@@ -17,7 +18,7 @@
           $$("[data-count]", e.target).concat(e.target.matches("[data-count]") ? [e.target] : []).forEach(countUp);
           revealIO.unobserve(e.target);
         });
-      }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+      }, narrow ? { threshold: 0.06, rootMargin: "0px 0px -2% 0px" } : { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
     }
     $$(".reveal, .bar", scope).forEach((el) => {
       if (reduce) el.classList.add("in");
@@ -188,7 +189,7 @@
         hero.style.setProperty("--ho", (1 - p).toFixed(3));
         hero.style.setProperty("--hy", p * 60 + "px");
       }
-      if (!reduce) blobs.forEach((b, i) => b.style.setProperty("translate", `0 ${y * (0.05 + i * 0.03) * -1}px`));
+      if (!reduce && finePointer) blobs.forEach((b, i) => b.style.setProperty("translate", `0 ${y * (0.05 + i * 0.03) * -1}px`));
 
       if (tl) {
         const r = tl.getBoundingClientRect();
@@ -215,7 +216,7 @@
     typewriter(cfg.hero.roles || []);
     scrollFx(cfg.sectionIds);
     if (!reduce) {
-      if (T.particles) particles();
+      if (T.particles && finePointer) particles();
       pointerFx(T.tilt);
       if (finePointer && T.cursor) cursor();
     }

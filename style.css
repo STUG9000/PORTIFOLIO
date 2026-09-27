@@ -488,6 +488,12 @@ footer { padding: 2.5rem 1.25rem; text-align: center; color: var(--muted); font-
   .hero { padding-top: 6.5rem; }
   .hero-visual { width: min(260px, 70%); order: -1; }
   .avatar span { font-size: 6rem; }
+  .badge { padding: .32rem .65rem; font-size: .68rem; }
+  .badge:nth-of-type(1) { top: 4%; left: -4%; }
+  .badge:nth-of-type(2) { top: 18%; right: -16%; }
+  .badge:nth-of-type(3) { bottom: 12%; left: -8%; }
+  .badge:nth-of-type(4) { bottom: 0%; right: -8%; }
+  .reveal { translate: 0 16px; transition-duration: .6s; }
   .project.featured { grid-column: auto; }
   .project.featured .cover { aspect-ratio: 16 / 9; }
   .grid { grid-template-columns: 1fr; }
