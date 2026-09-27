@@ -118,7 +118,7 @@ window.SITE = {
         tags: ["Fullstack", "CI/CD", "AWS"],
         link: "",
         repo: GH + "FINAN-ASPRO",
-        imagem: "",
+        imagem: "img/financaspro-painel.png",
         cor: ["#7c5cff", "#22d3ee"],
         destaque: true,
         detalhes: {
@@ -129,7 +129,12 @@ window.SITE = {
             "Foco em segurança (autenticação JWT, RLS no banco e proteção contra SQL Injection) e em infraestrutura moderna: aplicação containerizada com Docker e deploy em EC2 automatizado pelo GitHub Actions.",
           ],
           stack: ["React 19", "TypeScript", "Supabase", "Docker", "AWS EC2", "GitHub Actions"],
-          galeria: [],
+          galeria: [
+            "img/financaspro-transacoes.png",
+            "img/financaspro-cartoes.png",
+            "img/financaspro-calendario.png",
+            "img/financaspro-heatmap.png",
+          ],
         },
       },
       {
