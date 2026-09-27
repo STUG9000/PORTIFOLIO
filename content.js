@@ -39,7 +39,7 @@ window.SITE = {
     roles: ["DevOps & SRE", "Infraestrutura como Código", "Pipelines de CI/CD", "AWS · Terraform · Ansible"],
     resumo: "Analista de Sistemas formado, com foco em DevOps e SRE. Gosto de transformar deploy manual em pipeline e servidor \"configurado na mão\" em playbook versionado.",
     status: "Aberto a oportunidades",            // "" para ocultar
-    foto: "img/eu.png",                          // ex.: "img/eu.jpg"  ("" mostra a inicial do nome)
+    foto: "img/eu.webp",                          // ex.: "img/eu.jpg"  ("" mostra a inicial do nome)
     badges: ["AWS", "Terraform", "Ansible", "Docker"],
     botoes: [
       { texto: "Ver projetos", link: "#projetos", primario: true },
@@ -118,7 +118,7 @@ window.SITE = {
         tags: ["Fullstack", "IaC"],
         link: "",
         repo: "",
-        imagem: "img/srtaexecutiva-relatorios.png",
+        imagem: "img/srtaexecutiva-relatorios.webp",
         cor: ["#7c3aed", "#a855f7"],
         status: "Concluído",
         destaque: true,
@@ -131,10 +131,10 @@ window.SITE = {
           ],
           stack: ["React 19", "TypeScript", "Express", "SQLite", "Docker", "Terraform", "Ansible"],
           galeria: [
-            "img/srtaexecutiva-login.png",
-            "img/srtaexecutiva-solicitacoes.png",
-            "img/srtaexecutiva-detalhes.png",
-            "img/srtaexecutiva-servicos.png",
+            "img/srtaexecutiva-login.webp",
+            "img/srtaexecutiva-solicitacoes.webp",
+            "img/srtaexecutiva-detalhes.webp",
+            "img/srtaexecutiva-servicos.webp",
           ],
         },
       },
@@ -144,7 +144,7 @@ window.SITE = {
         tags: ["Fullstack", "CI/CD", "AWS"],
         link: "",
         repo: GH + "FINAN-ASPRO",
-        imagem: "img/financaspro-painel.png",
+        imagem: "img/financaspro-painel.webp",
         cor: ["#7c5cff", "#22d3ee"],
         detalhes: {
           papel: "Desenvolvedor Fullstack & DevOps",
@@ -155,10 +155,10 @@ window.SITE = {
           ],
           stack: ["React 19", "TypeScript", "Supabase", "Docker", "AWS EC2", "GitHub Actions"],
           galeria: [
-            "img/financaspro-transacoes.png",
-            "img/financaspro-cartoes.png",
-            "img/financaspro-calendario.png",
-            "img/financaspro-heatmap.png",
+            "img/financaspro-transacoes.webp",
+            "img/financaspro-cartoes.webp",
+            "img/financaspro-calendario.webp",
+            "img/financaspro-heatmap.webp",
           ],
         },
       },
@@ -214,7 +214,7 @@ window.SITE = {
         nome: "CosturaPro",
         descricao: "Sistema de gestão para ateliês de costura: pedidos em Kanban, cadastro de clientes, catálogo de serviços e relatórios.",
         tags: ["Fullstack", "SaaS"],
-        link: "", repo: "", imagem: "img/costurapro-dashboard.png",
+        link: "", repo: "", imagem: "img/costurapro-dashboard.webp",
         cor: ["#0ea5e9", "#6366f1"],
         status: "Em desenvolvimento",
         detalhes: {
@@ -224,7 +224,7 @@ window.SITE = {
             "Ainda em desenvolvimento — é o projeto usado como referência na pipeline de CI/CD mostrada na seção anterior.",
           ],
           stack: [],
-          galeria: ["img/costurapro-relatorios.png"],
+          galeria: ["img/costurapro-relatorios.webp"],
         },
       },
       {

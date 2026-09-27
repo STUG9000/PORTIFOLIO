@@ -71,7 +71,7 @@ section { padding-block: 6.5rem; position: relative; }
 .pl-inner { text-align: center; }
 .pl-name { display: block; font-size: clamp(2rem, 8vw, 4rem); font-weight: 800; letter-spacing: -.03em; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; animation: plIn .8s var(--ease) both; }
 .pl-bar { width: 180px; height: 3px; margin: 1.25rem auto 0; background: var(--border); border-radius: 3px; overflow: hidden; }
-.pl-bar i { display: block; height: 100%; width: 100%; background: var(--grad); transform-origin: left; animation: plBar 1s var(--ease) forwards; }
+.pl-bar i { display: block; height: 100%; width: 100%; background: var(--grad); transform-origin: left; animation: plBar .5s var(--ease) forwards; }
 @keyframes plIn { from { opacity: 0; translate: 0 20px; } }
 @keyframes plBar { from { transform: scaleX(0); } }
 
@@ -134,7 +134,7 @@ body.has-cursor #cursorGlow, body.has-cursor #cursorRing { opacity: 1; }
 
 /* ============ Hero ============ */
 .hero { min-height: 100svh; display: flex; align-items: center; padding-block: 8rem 5rem; }
-.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 3rem; align-items: center; }
+.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 3rem; align-items: center; opacity: var(--ho, 1); translate: 0 var(--hy, 0); }
 .status { display: inline-flex; align-items: center; gap: .6rem; padding: .4rem .9rem; border: 1px solid var(--border); background: var(--surface); border-radius: 999px; font-size: .85rem; color: var(--muted); margin-bottom: 1.4rem; }
 .status i { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 #22c55e88; animation: pulse 2s infinite; }
 @keyframes pulse { 70% { box-shadow: 0 0 0 10px #22c55e00; } 100% { box-shadow: 0 0 0 0 #22c55e00; } }

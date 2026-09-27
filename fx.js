@@ -49,10 +49,10 @@
       setTimeout(() => pre.remove(), 1500);
     };
     if (!enabled || reduce) { pre.remove(); document.body.classList.add("ready"); return; }
-    const minDelay = new Promise((r) => setTimeout(r, 1100));
+    const minDelay = new Promise((r) => setTimeout(r, narrow ? 350 : 600));
     const loaded = document.readyState === "complete" ? Promise.resolve() : new Promise((r) => addEventListener("load", r));
     Promise.all([minDelay, loaded]).then(start);
-    setTimeout(start, 3500);
+    setTimeout(start, 2500);
   }
 
   // ---------- Digitação ----------
@@ -171,7 +171,7 @@
   // ---------- Rolagem: progresso, nav, timeline, parallax ----------
   function scrollFx(sectionIds) {
     const bar = document.documentElement, top = $("#topbar");
-    const links = $$("#nav a"), tl = $(".timeline"), jobs = $$(".job");
+    const links = $$("#nav a"), hero = $(".hero-grid"), tl = $(".timeline"), jobs = $$(".job");
     const blobs = $$(".blob");
     let lastY = scrollY, ticking = false;
 
@@ -184,6 +184,12 @@
       top.classList.toggle("hide", y > lastY && y > 240 && !menuOpen);
       lastY = y;
 
+      // Esmaecimento leve do topo ao rolar no celular: nunca passa de 40%, para o texto seguir legível.
+      if (hero && !reduce && narrow) {
+        const p = clamp(y / (innerHeight * 1.1), 0, 1);
+        hero.style.setProperty("--ho", (1 - p * 0.4).toFixed(3));
+        hero.style.setProperty("--hy", (p * 20).toFixed(1) + "px");
+      }
       if (!reduce && finePointer) blobs.forEach((b, i) => b.style.setProperty("translate", `0 ${y * (0.05 + i * 0.03) * -1}px`));
 
       if (tl) {
