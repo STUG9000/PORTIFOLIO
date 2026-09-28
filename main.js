@@ -185,14 +185,23 @@
               c.localizacao && h("span", {}, "📍 " + c.localizacao),
               c.localizacao && H.status && h("span", { class: "sep" }, "•"),
               H.status && h("span", { class: "avail" }, H.status)))));
+      const t = c.terminal;
+      const term = t && t.linhas && t.linhas.length > 0 && h("div", { class: "card term" },
+        h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, t.titulo || "")),
+        h("pre", { class: "term-body" }, t.linhas.map((l, k) => {
+          const cls = l[0] === "$" ? "cmd" : l[0] === "✓" ? "ok" : "out";
+          return reveal(h("span", { class: cls }, l), k);
+        })));
+
       return section("sobre", i, c.titulo,
         reveal(profile),
         h("div", { class: "about" },
           reveal(h("div", { class: "about-text" },
-            c.texto.map((t) => h("p", {}, t)),
+            c.texto.map((t2) => h("p", {}, t2)),
             c.cv && h("div", { class: "actions" }, h("a", { href: c.cv, class: "btn magnetic", download: "" }, "Baixar CV ↓"))), 1),
           h("div", { class: "stats" }, c.destaques.map((d, k) =>
-            reveal(card("stat", h("b", { "data-count": d.valor, "data-suffix": d.sufixo || "" }, d.valor + (d.sufixo || "")), h("span", {}, d.rotulo)), k + 2)))));
+            reveal(card("stat", h("b", { "data-count": d.valor, "data-suffix": d.sufixo || "" }, d.valor + (d.sufixo || "")), h("span", {}, d.rotulo)), k + 2))),
+          term));
     },
 
     pipeline(i) {
@@ -511,7 +520,10 @@
   $("#brand").textContent = H.nome;
   const nav = $("#nav");
   nav.append(...active.map((k) => link(S[k].menu || S[k].titulo, "#" + k)));
-  $("#footer").append(h("span", {}, S.rodape), h("a", { class: "to-top", href: "#top" }, "↑ Voltar ao topo"));
+  $("#footer").append(
+    h("span", {}, S.rodape),
+    h("a", { class: "to-top", href: "#top" }, "↑ Voltar ao topo"),
+    S.assinatura && h("span", { class: "assinatura" }, S.assinatura));
 
   const menuBtn = $("#menuBtn");
   const setMenu = (open) => { nav.classList.toggle("open", open); menuBtn.setAttribute("aria-expanded", open); document.body.classList.toggle("locked", open); };

@@ -65,6 +65,24 @@ window.SITE = {
       { valor: 5, sufixo: "", rotulo: "pipelines em um só projeto" },
     ],
     cv: "",   // ex.: "cv.pdf" (aparece um botão "Baixar CV")
+
+    // Terminal de apresentação. Mesma convenção da pipeline:
+    // "$ " = comando digitado, "✓ " = saída de sucesso, resto = saída normal.
+    // Apague o bloco "terminal" inteiro para ocultar.
+    terminal: {
+      titulo: "gabriel@ops — zsh",
+      linhas: [
+        "$ whoami",
+        "Gabriel Stug — engenheiro DevOps & SRE",
+        "$ terraform apply -auto-approve",
+        "✓ Apply complete! Resources: 12 added, 0 changed, 0 destroyed.",
+        "$ ansible-playbook -i production.yml site.yml",
+        "✓ ok=24  changed=6  unreachable=0  failed=0",
+        "$ docker ps --filter status=running",
+        "NAME             STATUS",
+        "✓ srta-executiva  Up (healthy)",
+      ],
+    },
   },
 
   // ---------- Pipeline animada (meu ciclo DevOps) ----------
@@ -331,4 +349,5 @@ window.SITE = {
   },
 
   rodape: "© " + new Date().getFullYear() + " Gabriel Stuginski Lima.",
+  assinatura: "BY GABRIEL STUG",   // "" para ocultar
 };
