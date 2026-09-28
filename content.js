@@ -38,7 +38,7 @@ window.SITE = {
     // Frases que ficam sendo digitadas
     roles: ["DevOps & SRE", "Infraestrutura como Código", "Pipelines de CI/CD", "AWS · Terraform · Ansible"],
     resumo: "Analista de Sistemas formado, com foco em DevOps e SRE. Gosto de transformar deploy manual em pipeline e servidor \"configurado na mão\" em playbook versionado.",
-    status: "Aberto a oportunidades",            // "" para ocultar
+    status: "status: disponível",                // "" para ocultar
     foto: "img/eu.webp",                          // ex.: "img/eu.jpg"  ("" mostra a inicial do nome)
     badges: ["AWS", "Terraform", "Ansible", "Docker"],
     botoes: [
