@@ -141,7 +141,7 @@ window.SITE = {
       {
         nome: "FinançasPro",
         descricao: "Plataforma web fullstack de gestão financeira pessoal, com deploy automatizado em AWS via CI/CD. Projeto de conclusão de curso.",
-        tags: ["Fullstack", "CI/CD", "AWS"],
+        tags: ["Fullstack", "CI/CD", "AWS", "IaC"],
         link: "",
         repo: GH + "FINAN-ASPRO",
         imagem: "img/financaspro-painel.webp",
@@ -153,7 +153,7 @@ window.SITE = {
             "O FinançasPro é uma aplicação web fullstack desenvolvida como projeto de conclusão de curso, com o objetivo de oferecer uma solução completa de controle financeiro pessoal. O sistema permite ao usuário cadastrar e acompanhar receitas e despesas, gerenciar cartões de crédito, definir orçamentos por categoria, criar metas de economia e visualizar transações em um quadro estilo Kanban.",
             "A aplicação foi construída com foco em boas práticas de desenvolvimento, segurança (autenticação JWT, RLS no banco de dados) e infraestrutura moderna, com deploy automatizado via CI/CD.",
           ],
-          stack: ["React 19", "TypeScript", "Supabase (Postgres)", "Docker", "AWS EC2", "GitHub Actions"],
+          stack: ["React 19", "TypeScript", "Supabase (Postgres)", "Docker", "Terraform", "Ansible", "AWS EC2", "GitHub Actions"],
           galeria: [
             "img/financaspro-transacoes.webp",
             "img/financaspro-cartoes.webp",
@@ -213,7 +213,7 @@ window.SITE = {
       {
         nome: "CosturaPro",
         descricao: "Sistema de gestão para ateliês de costura: pedidos em Kanban, cadastro de clientes, catálogo de serviços e relatórios.",
-        tags: ["Fullstack", "SaaS", "AWS"],
+        tags: ["Fullstack", "SaaS", "AWS", "CI/CD", "IaC"],
         link: "", repo: "", imagem: "img/costurapro-dashboard.webp",
         cor: ["#0ea5e9", "#6366f1"],
         status: "Em desenvolvimento",
@@ -223,7 +223,7 @@ window.SITE = {
             "Sistema de gestão para ateliês de costura e confecção: pedidos organizados em Kanban (aguardando, em produção, finalizado, entregue), cadastro de clientes, catálogo de serviços com preços e relatórios com indicadores financeiros e ranking de vendedores.",
             "Ainda em desenvolvimento, e aqui o foco é a infraestrutura: deploy na AWS com ECS e banco no RDS, em vez do banco local usado na Srta Executiva. É o projeto usado como referência na pipeline de CI/CD mostrada na seção anterior.",
           ],
-          stack: ["Docker", "AWS ECS", "AWS RDS"],
+          stack: ["Docker", "Terraform", "Ansible", "GitHub Actions", "AWS ECS", "AWS RDS"],
           galeria: ["img/costurapro-relatorios.webp"],
         },
       },
