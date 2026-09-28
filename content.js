@@ -73,7 +73,7 @@ window.SITE = {
       titulo: "gabriel@ops — zsh",
       linhas: [
         "$ whoami",
-        "Gabriel Stug — engenheiro DevOps & SRE",
+        "Gabriel Stug",
         "$ terraform apply -auto-approve",
         "✓ Apply complete! Resources: 12 added, 0 changed, 0 destroyed.",
         "$ ansible-playbook -i production.yml site.yml",

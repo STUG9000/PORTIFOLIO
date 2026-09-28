@@ -186,12 +186,55 @@
               c.localizacao && H.status && h("span", { class: "sep" }, "•"),
               H.status && h("span", { class: "avail" }, H.status)))));
       const t = c.terminal;
-      const term = t && t.linhas && t.linhas.length > 0 && h("div", { class: "card term" },
-        h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, t.titulo || "")),
-        h("pre", { class: "term-body" }, t.linhas.map((l, k) => {
-          const cls = l[0] === "$" ? "cmd" : l[0] === "✓" ? "ok" : "out";
-          return reveal(h("span", { class: cls }, l), k);
-        })));
+      let term = false;
+      if (t && t.linhas && t.linhas.length > 0) {
+        const lineClass = (l) => (l[0] === "$" ? "cmd" : l[0] === "✓" ? "ok" : "out");
+        const body = h("pre", { class: "term-body" },
+          t.linhas.map((l) => h("span", { class: lineClass(l) }, l)),
+          h("span", { class: "cmd" }, "$ ", h("i", { class: "term-cursor blink" })));
+        term = h("div", { class: "card term" },
+          h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, t.titulo || "")),
+          body);
+
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          let started = false;
+          const start = () => {
+            if (started) return;
+            started = true;
+            // Reserva a altura final antes de limpar, para a caixa não crescer enquanto digita.
+            body.style.minHeight = body.getBoundingClientRect().height + "px";
+            body.replaceChildren();
+
+            let i = 0;
+            const nextLine = () => {
+              if (i >= t.linhas.length) {
+                body.append(h("span", { class: "cmd" }, "$ ", h("i", { class: "term-cursor blink" })));
+                return;
+              }
+              const l = t.linhas[i++];
+              const el = h("span", { class: lineClass(l) });
+              body.append(el);
+              if (l[0] !== "$") { el.textContent = l; setTimeout(nextLine, 280); return; }
+              const txt = document.createTextNode("");
+              const cursor = h("i", { class: "term-cursor" });
+              el.append(txt, cursor);
+              let n = 0;
+              const tick = () => {
+                txt.data = l.slice(0, ++n);
+                if (n < l.length) setTimeout(tick, 26 + Math.random() * 45);
+                else { cursor.remove(); setTimeout(nextLine, 420); }
+              };
+              tick();
+            };
+            nextLine();
+          };
+          new IntersectionObserver(([e], io) => {
+            if (!e.isIntersecting) return;
+            io.disconnect();
+            start();
+          }, { threshold: 0.3 }).observe(term);
+        }
+      }
 
       return section("sobre", i, c.titulo,
         reveal(profile),

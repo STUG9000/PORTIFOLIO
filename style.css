@@ -218,12 +218,14 @@ body.ready .ch { animation: rise .9s var(--ease) forwards; animation-delay: calc
 .term-head .dots i:nth-child(2) { background: #febc2e; }
 .term-head .dots i:nth-child(3) { background: #28c840; }
 .term-head code { font-family: var(--mono); font-size: .8rem; color: var(--muted); }
-.term-body { font-family: var(--mono); font-size: .82rem; line-height: 1.85; margin: 0; padding: 1.2rem 1.3rem; display: grid; }
+.term-body { font-family: var(--mono); font-size: .82rem; line-height: 1.85; margin: 0; padding: 1.2rem 1.3rem; display: grid; align-content: start; }
 .term-body span { white-space: pre-wrap; word-break: break-word; }
 .term-body .cmd { color: var(--text); }
 .term-body .cmd::first-letter { color: var(--accent2); }
 .term-body .ok { color: var(--ok); }
 .term-body .out { color: var(--muted); }
+.term-cursor { display: inline-block; width: .5em; height: 1.05em; vertical-align: -.2em; margin-left: 2px; background: var(--accent2); }
+.term-cursor.blink { animation: blink 1s steps(1) infinite; }
 @media (max-width: 560px) { .term-body { font-size: .72rem; padding: 1rem; } }
 
 .stats { display: grid; gap: 1rem; }
