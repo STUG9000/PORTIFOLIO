@@ -10,8 +10,9 @@ const GH = "https://github.com/STUG9000/";
 window.SITE = {
   // ---------- Tema e efeitos ----------
   theme: {
-    // As cores ficam nos tokens do topo do style.css (paleta de painel de
-    // monitoramento: verde = ok, âmbar = alerta, vermelho = falha).
+    // As cores ficam nos tokens do topo do style.css (paleta Tokyo Night, cada
+    // cor com uma função fixa: azul = caminho, ciano = comando, verde = sucesso,
+    // amarelo = branch/em andamento, magenta = palavra-chave, vermelho = erro).
     mode: "dark",          // "dark" | "light" | "auto" (o visitante pode alternar)
     font: "Inter",         // fonte do Google Fonts ("" = fonte do sistema)
     mono: "JetBrains Mono", // fonte monoespaçada: títulos de seção, tags e terminais
@@ -22,6 +23,11 @@ window.SITE = {
     cursor: false,         // brilho/anel que segue o mouse (só desktop)
     tilt: false,           // cards que inclinam em 3D
   },
+
+  // Prompt estilo Powerlevel10k usado nos títulos de seção:
+  //   [usuario] [dir da seção] [branch]
+  //   ❯ comando
+  prompt: { usuario: "gabriel", branch: "main" },
 
   meta: {
     title: "Gabriel Stuginski — DevOps & SRE",
@@ -68,10 +74,11 @@ window.SITE = {
   marquee: ["AWS", "EC2", "ECS", "RDS", "Terraform", "Ansible", "Docker", "Kubernetes", "GitHub Actions", "Linux", "Bash", "Go", "OpenTelemetry", "Grafana"],
 
   // ---------- Sobre ----------
-  // "comando": título de cada seção no estilo terminal ("" usa o "titulo").
+  // "dir" e "comando": prompt do título de cada seção (sem "comando", usa o "titulo").
   sobre: {
     titulo: "Sobre mim",
-    comando: "$ cat sobre.md",
+    dir: "~/sobre",
+    comando: "cat sobre.md",
     texto: [
       "Sou Analista de Sistemas formado em Análise e Desenvolvimento de Sistemas e direcionei minha carreira para DevOps e SRE. Tenho prática com AWS (EC2, RDS, ECS e outros serviços), Infraestrutura como Código com Terraform e automação de servidores com Ansible.",
       "Meu ciclo de trabalho vai do commit à produção: build e testes no GitHub Actions, imagem Docker, infraestrutura com Terraform + Ansible, deploy em EC2/ECS e observabilidade com OpenTelemetry e Grafana, usando SLOs e error budget como feedback.",
@@ -111,7 +118,8 @@ window.SITE = {
   // O log é uma simulação ilustrativa.
   pipeline: {
     titulo: "Do commit à produção",
-    comando: "$ gh run watch",
+    dir: "~/pipeline",
+    comando: "gh run watch",
     menu: "Pipeline",
     texto: "Meu fluxo: trabalho na branch dev e abro um pull request para a main. A CI roda de novo, a imagem é construída e o Terraform gera o plano. Quem aprova revisa o plano; só depois o apply e o deploy rodam, e um smoke test confirma que a versão nova está no ar. Se ele falhar, o rollback é automático.",
     arquivo: "cd-production.yml",
@@ -139,7 +147,8 @@ window.SITE = {
   // ---------- Serviços / O que faço ----------
   servicos: {
     titulo: "O que eu faço",
-    comando: "$ ls ./servicos",
+    dir: "~/servicos",
+    comando: "ls",
     itens: [
       // "icone": cloud, layers, refresh, chart, git, flask, box, rocket, server, terminal, shield, code, book
       { icone: "cloud", titulo: "Cloud AWS", descricao: "Provisionamento e deploy em EC2, ECS e RDS." },
@@ -155,7 +164,8 @@ window.SITE = {
   // "estado": badge do card — "deployed" (verde), "in progress" (âmbar) ou "lab" (cinza).
   projetos: {
     titulo: "Projetos",
-    comando: "~/projetos",
+    dir: "~/projetos",
+    comando: "ls -la",
     itens: [
       {
         nome: "Srta Executiva",
@@ -334,7 +344,8 @@ window.SITE = {
   // do menu. Se não houver posts, a seção some sozinha.
   feed: {
     titulo: "Atualizações",
-    comando: "$ tail -f updates.log",
+    dir: "~/feed",
+    comando: "tail -f updates.log",
     menu: "Feed",
   },
 
@@ -342,7 +353,8 @@ window.SITE = {
   // Também gerenciado pelo painel /admin, junto com o feed.
   estudos: {
     titulo: "Estudando agora",
-    comando: "$ ./estudos --now",
+    dir: "~/estudos",
+    comando: "./estudos --now",
     menu: "Estudos",
   },
 
@@ -354,7 +366,8 @@ window.SITE = {
   // sua experiência real.
   habilidades: {
     titulo: "Habilidades",
-    comando: "$ kubectl get skills",
+    dir: "~/skills",
+    comando: "kubectl get skills",
     niveis: [
       {
         nome: "Uso frequente",
@@ -392,7 +405,8 @@ window.SITE = {
   // ---------- Experiência / Formação ----------
   experiencia: {
     titulo: "Formação & Trajetória",
-    comando: "$ git log --oneline",
+    dir: "~/trajetoria",
+    comando: "git log --oneline",
     itens: [
       { periodo: "Formado", cargo: "Análise e Desenvolvimento de Sistemas", local: "Graduação", descricao: "Formação em desenvolvimento de sistemas; TCC: FinançasPro, aplicação fullstack com deploy automatizado na AWS." },
       { periodo: "Alura", cargo: "Site Reliability Engineering", local: "Curso", descricao: "Fundamentos de SRE: deploy, rollback, health checks, métricas e monitoramento." },
@@ -409,7 +423,8 @@ window.SITE = {
   // ---------- Contato ----------
   contato: {
     titulo: "Vamos conversar",
-    comando: "$ ssh gabriel@contato",
+    dir: "~/contato",
+    comando: "ssh gabriel@contato",
     texto: "Procurando alguém para automatizar infraestrutura, montar pipelines ou cuidar da confiabilidade dos seus sistemas? Me mande uma mensagem.",
     email: "stug9000@gmail.com",
     // Para o formulário enviar de verdade, crie um form em formspree.io e cole aqui

@@ -46,7 +46,7 @@
   if (metaDesc) metaDesc.setAttribute("content", S.meta.description);
   const initial = (S.hero.nome || "P").trim()[0].toUpperCase();
   document.head.append(h("link", { rel: "icon", href: "data:image/svg+xml," + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="2" y="2" width="60" height="60" rx="12" fill="#0b0e14" stroke="#3fb950" stroke-width="4"/><text x="32" y="44" font-size="34" font-weight="700" text-anchor="middle" fill="#3fb950" font-family="monospace">${initial}</text></svg>`) }));
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="2" y="2" width="60" height="60" rx="12" fill="#1a1b26" stroke="#7aa2f7" stroke-width="4"/><text x="32" y="44" font-size="34" font-weight="700" text-anchor="middle" fill="#7dcfff" font-family="monospace">${initial}</text></svg>`) }));
 
   // ---------- Utilidades ----------
   let toastTimer;
@@ -138,8 +138,8 @@
   // Seções que dependem da API: ficam escondidas até haver conteúdo e somem se vazias.
   function renumber() {
     [...document.querySelectorAll("main > section[id]:not(.hero)")].filter((sec) => !sec.hidden).forEach((sec, n) => {
-      const e = sec.querySelector(".eyebrow");
-      if (e) e.textContent = e.textContent.replace(/^\d+/, String(n + 1).padStart(2, "0"));
+      const e = sec.querySelector(".pl-num");
+      if (e) e.textContent = String(n + 1).padStart(2, "0");
     });
   }
   function resolveSection(el, id, hasItems) {
@@ -152,12 +152,22 @@
 
   const LABELS = { sobre: "Sobre", pipeline: "Pipeline", servicos: "Serviços", projetos: "Projetos", feed: "Feed", estudos: "Estudos", habilidades: "Skills", experiencia: "Trajetória", depoimentos: "Depoimentos", contato: "Contato" };
 
+  // Título de seção como prompt do Powerlevel10k: pílulas (usuário, diretório, branch) e o comando embaixo.
+  const P = S.prompt || {};
   function section(id, index, titulo, ...kids) {
+    const c = S[id], cmd = (c.comando || "").replace(/^\$\s*/, "");
+    const label = (cmd ? titulo : c.rotulo || LABELS[id] || id).toLowerCase();
+    const branch = h("span", { class: "seg git" }, icon("git"), P.branch || "main");
     return h("section", { id },
       h("div", { class: "wrap" },
-        reveal(h("div", {},
-          h("div", { class: "eyebrow" }, String(index + 1).padStart(2, "0") + " — " + (S[id].comando ? titulo : S[id].rotulo || LABELS[id] || id)),
-          h("h2", { class: "section-title" }, S[id].comando || titulo))),
+        reveal(h("div", { class: "prompt" },
+          h("div", { class: "pl-line", "aria-hidden": "true" },
+            h("span", { class: "seg user" }, P.usuario || "user"),
+            h("span", { class: "seg dir" }, c.dir || "~/" + id),
+            branch,
+            h("span", { class: "pl-comment" }, "# ", h("span", { class: "pl-num" }, String(index + 1).padStart(2, "0")), " · " + label)),
+          h("h2", { class: "section-title", "aria-label": titulo },
+            cmd ? [h("span", { class: "pchar", "aria-hidden": "true" }, "❯ "), cmd] : titulo))),
         ...kids));
   }
 
@@ -553,7 +563,7 @@
       const form = h("form", { class: "card form", novalidate: false },
         h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, "contato — zsh")),
         h("div", { class: "form-body" },
-          h("p", { class: "curl" }, h("span", { class: "p" }, "$ "), "curl -X POST " + endpoint + "/contato \\"),
+          h("p", { class: "curl" }, h("span", { class: "p" }, "❯ "), h("span", { class: "c" }, "curl"), " ", h("span", { class: "f" }, "-X"), " POST ", h("span", { class: "u" }, endpoint + "/contato"), " \\"),
           field("seu nome", "nome", "text", { autocomplete: "name" }),
           field("seu e-mail", "email", "email", { autocomplete: "email" }),
           field("sua mensagem", "mensagem", "textarea"),
@@ -614,7 +624,7 @@
           pre.innerHTML = code.linhas.map((l, k) => `<span class="l"><span class="ln">${k + 1}</span>${hcl(l)}</span>`).join("");
           return pre;
         })(),
-        code.saida && h("div", { class: "hcl-out" }, h("span", { class: "p" }, "$ "), "terraform plan", h("br"), h("span", { class: "ok" }, code.saida)))),
+        code.saida && h("div", { class: "hcl-out" }, h("span", { class: "p" }, "❯ "), h("span", { class: "c" }, "terraform plan"), h("br"), h("span", { class: "ok" }, code.saida)))),
     h("a", { class: "scroll-hint", href: "#" + (S.sections[0] || "sobre"), "aria-label": "Rolar para baixo" }, h("i"), "scroll"));
   main.append(hero);
 
