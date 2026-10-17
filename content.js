@@ -10,16 +10,17 @@ const GH = "https://github.com/STUG9000/";
 window.SITE = {
   // ---------- Tema e efeitos ----------
   theme: {
-    accent: "#7c5cff",     // cor principal
-    accent2: "#22d3ee",    // segunda cor do gradiente
+    // As cores ficam nos tokens do topo do style.css (paleta de painel de
+    // monitoramento: verde = ok, âmbar = alerta, vermelho = falha).
     mode: "dark",          // "dark" | "light" | "auto" (o visitante pode alternar)
     font: "Inter",         // fonte do Google Fonts ("" = fonte do sistema)
-    radius: "18px",        // arredondamento dos cards
+    mono: "JetBrains Mono", // fonte monoespaçada: títulos de seção, tags e terminais
+    radius: "10px",        // arredondamento dos cards
 
     intro: true,           // tela de abertura animada
-    particles: true,       // fundo de partículas interativas
-    cursor: true,          // brilho/anel que segue o mouse (só desktop)
-    tilt: true,            // cards que inclinam em 3D
+    particles: false,      // fundo de partículas interativas
+    cursor: false,         // brilho/anel que segue o mouse (só desktop)
+    tilt: false,           // cards que inclinam em 3D
   },
 
   meta: {
@@ -39,8 +40,24 @@ window.SITE = {
     roles: ["DevOps & SRE", "Infraestrutura como Código", "Pipelines de CI/CD", "AWS · Terraform · Ansible"],
     resumo: "Analista de Sistemas formado, com foco em DevOps e SRE. Gosto de transformar deploy manual em pipeline e servidor \"configurado na mão\" em playbook versionado.",
     status: "status: disponível",                // "" para ocultar
-    foto: "img/eu.webp",                          // ex.: "img/eu.jpg"  ("" mostra a inicial do nome)
-    badges: ["AWS", "Terraform", "Ansible", "Docker"],
+    foto: "img/eu.webp",                          // foto pequena ao lado do nome ("" mostra a inicial)
+    // Bloco "Terraform" ao lado do texto (igual ao README do GitHub).
+    // Cada item do array vira uma linha de código.
+    codigo: {
+      arquivo: "main.tf",
+      linhas: [
+        'resource "developer" "gabriel_stuginski" {',
+        '  formacao = "Análise e Desenvolvimento de Sistemas"',
+        '  foco     = ["DevOps", "SRE"]',
+        '  cloud    = ["AWS EC2", "ECS", "RDS"]',
+        '  iac      = ["Terraform", "Ansible"]',
+        '  ci_cd    = ["GitHub Actions", "Docker"]',
+        '  observe  = ["OpenTelemetry", "Grafana"]',
+        '  status   = "provisionado e em produção"',
+        '}',
+      ],
+      saida: "✓ Plan: 1 to add, 0 to change, 0 to destroy.",
+    },
     botoes: [
       { texto: "Ver projetos", link: "#projetos", primario: true },
       { texto: "Falar comigo", link: "#contato" },
@@ -51,26 +68,30 @@ window.SITE = {
   marquee: ["AWS", "EC2", "ECS", "RDS", "Terraform", "Ansible", "Docker", "Kubernetes", "GitHub Actions", "Linux", "Bash", "Go", "OpenTelemetry", "Grafana"],
 
   // ---------- Sobre ----------
+  // "comando": título de cada seção no estilo terminal ("" usa o "titulo").
   sobre: {
     titulo: "Sobre mim",
-    cargoAtual: "DevOps & SRE",     // aparece no cartão de perfil, tipo o "título" do LinkedIn
-    localizacao: "Brasil",          // "" para ocultar. Ex.: "São Paulo, SP"
+    comando: "$ cat sobre.md",
     texto: [
       "Sou Analista de Sistemas formado em Análise e Desenvolvimento de Sistemas e direcionei minha carreira para DevOps e SRE. Tenho prática com AWS (EC2, RDS, ECS e outros serviços), Infraestrutura como Código com Terraform e automação de servidores com Ansible.",
       "Meu ciclo de trabalho vai do commit à produção: build e testes no GitHub Actions, imagem Docker, infraestrutura com Terraform + Ansible, deploy em EC2/ECS e observabilidade com OpenTelemetry e Grafana, usando SLOs e error budget como feedback.",
     ],
     destaques: [
-      { valor: 14, sufixo: "", rotulo: "repositórios públicos" },
-      { valor: 7, sufixo: "", rotulo: "projetos de IaC e CI/CD" },
-      { valor: 5, sufixo: "", rotulo: "pipelines em um só projeto" },
+      // Cards de métrica estilo Grafana. "metrica" = nome em mono no topo;
+      // "serie" = pontos do mini-gráfico (opcional; sem ela, é gerado um crescimento até o valor).
+      { valor: 14, sufixo: "", metrica: "github_repos_total", rotulo: "repositórios públicos" },
+      { valor: 5, sufixo: "", metrica: "ci_pipelines", rotulo: "pipelines em um só projeto" },
+      { valor: 7, sufixo: "", metrica: "iac_projects", rotulo: "projetos de IaC e CI/CD" },
     ],
     cv: "",   // ex.: "cv.pdf" (aparece um botão "Baixar CV")
 
     // Terminal de apresentação. Mesma convenção da pipeline:
     // "$ " = comando digitado, "✓ " = saída de sucesso, resto = saída normal.
+    // "prontas": quantas linhas já aparecem escritas; o resto é digitado.
     // Apague o bloco "terminal" inteiro para ocultar.
     terminal: {
       titulo: "gabriel@ops — zsh",
+      prontas: 4,
       linhas: [
         "$ whoami",
         "Gabriel Stug",
@@ -90,6 +111,7 @@ window.SITE = {
   // O log é uma simulação ilustrativa.
   pipeline: {
     titulo: "Do commit à produção",
+    comando: "$ gh run watch",
     menu: "Pipeline",
     texto: "Meu fluxo: trabalho na branch dev e abro um pull request para a main. A CI roda de novo, a imagem é construída e o Terraform gera o plano. Quem aprova revisa o plano; só depois o apply e o deploy rodam, e um smoke test confirma que a versão nova está no ar. Se ele falhar, o rollback é automático.",
     arquivo: "cd-production.yml",
@@ -117,6 +139,7 @@ window.SITE = {
   // ---------- Serviços / O que faço ----------
   servicos: {
     titulo: "O que eu faço",
+    comando: "$ ls ./servicos",
     itens: [
       // "icone": cloud, layers, refresh, chart, git, flask, box, rocket, server, terminal, shield, code, book
       { icone: "cloud", titulo: "Cloud AWS", descricao: "Provisionamento e deploy em EC2, ECS e RDS." },
@@ -127,8 +150,12 @@ window.SITE = {
   },
 
   // ---------- Projetos ----------
+  // "diagrama": etapas da arquitetura, desenhadas no lugar do print quando
+  // o projeto não tem "imagem". Mesmos ícones dos serviços.
+  // "estado": badge do card — "deployed" (verde), "in progress" (âmbar) ou "lab" (cinza).
   projetos: {
     titulo: "Projetos",
+    comando: "~/projetos",
     itens: [
       {
         nome: "Srta Executiva",
@@ -137,9 +164,13 @@ window.SITE = {
         link: "",
         repo: "",
         imagem: "img/srtaexecutiva-relatorios.webp",
-        cor: ["#7c3aed", "#a855f7"],
-        status: "Concluído",
-        destaque: true,
+        estado: "deployed",
+        diagrama: [
+          { icone: "layers", nome: "Terraform", sub: "provisiona" },
+          { icone: "terminal", nome: "Ansible", sub: "configura" },
+          { icone: "box", nome: "Docker", sub: "Express" },
+          { icone: "server", nome: "EC2", sub: "SQLite local" },
+        ],
         detalhes: {
           papel: "Desenvolvedor Full-stack & DevOps",
           longa: [
@@ -163,7 +194,14 @@ window.SITE = {
         link: "",
         repo: GH + "FINAN-ASPRO",
         imagem: "img/financaspro-painel.webp",
-        cor: ["#7c5cff", "#22d3ee"],
+        estado: "deployed",
+        diagrama: [
+          { icone: "git", nome: "GitHub", sub: "push" },
+          { icone: "refresh", nome: "Actions", sub: "CI/CD" },
+          { icone: "box", nome: "Docker", sub: "imagem" },
+          { icone: "cloud", nome: "EC2", sub: "Terraform" },
+          { icone: "server", nome: "Supabase", sub: "Postgres" },
+        ],
         detalhes: {
           papel: "Desenvolvedor Fullstack & DevOps",
           ano: "TCC",
@@ -184,8 +222,13 @@ window.SITE = {
         nome: "DOCKER-CI",
         descricao: "API REST em Go com cinco pipelines no GitHub Actions: testes, imagem Docker, deploy em EC2 e ECS e teste de carga.",
         tags: ["CI/CD", "AWS", "Docker"],
-        link: "", repo: GH + "DOCKER-CI", imagem: "",
-        cor: ["#2496ed", "#22d3ee"],
+        link: "", repo: GH + "DOCKER-CI", imagem: "", estado: "lab",
+        diagrama: [
+          { icone: "git", nome: "GitHub", sub: "push" },
+          { icone: "refresh", nome: "Actions", sub: "go test" },
+          { icone: "box", nome: "Docker Hub", sub: "imagem" },
+          { icone: "server", nome: "EC2 · ECS", sub: "deploy" },
+        ],
         detalhes: {
           papel: "DevOps", ano: "2026",
           longa: [
@@ -200,8 +243,13 @@ window.SITE = {
         nome: "IaC com Terraform + Ansible",
         descricao: "Provisionamento de uma instância EC2 com Terraform e configuração automática via Ansible.",
         tags: ["IaC", "AWS"],
-        link: "", repo: GH + "iac-terraform-ansible", imagem: "",
-        cor: ["#7b42bc", "#ee0000"],
+        link: "", repo: GH + "iac-terraform-ansible", imagem: "", estado: "lab",
+        diagrama: [
+          { icone: "layers", nome: "Terraform", sub: "plan · apply" },
+          { icone: "cloud", nome: "AWS EC2", sub: "instância" },
+          { icone: "terminal", nome: "Ansible", sub: "SSH" },
+          { icone: "server", nome: "Web server", sub: "no ar" },
+        ],
         detalhes: {
           papel: "DevOps", ano: "2026",
           longa: [
@@ -216,8 +264,12 @@ window.SITE = {
         nome: "WordPress automatizado com Ansible",
         descricao: "Stack WordPress com servidores web e banco separados, provisionada com um único comando.",
         tags: ["IaC", "Linux"],
-        link: "", repo: GH + "WordPress-Stack-Automatizado-com-Ansible", imagem: "",
-        cor: ["#ee0000", "#f97316"],
+        link: "", repo: GH + "WordPress-Stack-Automatizado-com-Ansible", imagem: "", estado: "lab",
+        diagrama: [
+          { icone: "terminal", nome: "Ansible", sub: "roles" },
+          { icone: "server", nome: "VM web", sub: "Apache · WP" },
+          { icone: "server", nome: "VM db", sub: "MySQL" },
+        ],
         detalhes: {
           papel: "DevOps", ano: "2026",
           longa: [
@@ -233,8 +285,14 @@ window.SITE = {
         descricao: "Sistema de gestão para ateliês de costura: pedidos em Kanban, cadastro de clientes, catálogo de serviços e relatórios.",
         tags: ["Fullstack", "SaaS", "AWS", "CI/CD", "IaC"],
         link: "", repo: "", imagem: "img/costurapro-dashboard.webp",
-        cor: ["#0ea5e9", "#6366f1"],
-        status: "Em desenvolvimento",
+        estado: "in progress",
+        diagrama: [
+          { icone: "git", nome: "GitHub", sub: "PR → main" },
+          { icone: "refresh", nome: "Actions", sub: "CI/CD" },
+          { icone: "box", nome: "Docker Hub", sub: "imagem" },
+          { icone: "cloud", nome: "ECS", sub: "deploy" },
+          { icone: "server", nome: "RDS", sub: "banco" },
+        ],
         detalhes: {
           papel: "Desenvolvedor Full-stack", ano: "2026",
           longa: [
@@ -249,8 +307,14 @@ window.SITE = {
         nome: "SRE Nível 1",
         descricao: "Ciclo de vida de uma API em produção: testes, container, deploy com health check, rollback e monitoramento.",
         tags: ["SRE", "CI/CD", "Docker"],
-        link: "", repo: GH + "sre-prova-nivel1", imagem: "",
-        cor: ["#10b981", "#3b82f6"],
+        link: "", repo: GH + "sre-prova-nivel1", imagem: "", estado: "lab",
+        diagrama: [
+          { icone: "git", nome: "Push", sub: "PR" },
+          { icone: "flask", nome: "pytest", sub: "Actions" },
+          { icone: "box", nome: "Docker", sub: "deploy" },
+          { icone: "shield", nome: "/health", sub: "valida" },
+          { icone: "refresh", nome: "Rollback", sub: "se falhar" },
+        ],
         detalhes: {
           papel: "SRE", ano: "2026",
           longa: [
@@ -270,6 +334,7 @@ window.SITE = {
   // do menu. Se não houver posts, a seção some sozinha.
   feed: {
     titulo: "Atualizações",
+    comando: "$ tail -f updates.log",
     menu: "Feed",
   },
 
@@ -277,19 +342,24 @@ window.SITE = {
   // Também gerenciado pelo painel /admin, junto com o feed.
   estudos: {
     titulo: "Estudando agora",
+    comando: "$ ./estudos --now",
     menu: "Estudos",
   },
 
-  // ---------- Habilidades, agrupadas por nível ----------
+  // ---------- Habilidades, como saída do kubectl get ----------
+  // Cada nível vira um grupo de linhas na tabela. "status" é a coluna STATUS:
+  // "Running" (verde), "Completed" (cinza) ou "Pending" (âmbar).
   // "chave": palavras procuradas na stack dos projetos; onde houver, aparece
   // "usado em <projeto>" (clicável). Mova as skills entre os níveis conforme a
   // sua experiência real.
   habilidades: {
     titulo: "Habilidades",
+    comando: "$ kubectl get skills",
     niveis: [
       {
         nome: "Uso frequente",
-        desc: "O que uso nos meus projetos e pipelines.",
+        nivel: "frequente",
+        status: "Running",
         itens: [
           { nome: "AWS (EC2, ECS, RDS)", chave: ["AWS", "EC2", "ECS"] },
           { nome: "Terraform", chave: ["Terraform"] },
@@ -301,7 +371,8 @@ window.SITE = {
       },
       {
         nome: "Já usei em projetos",
-        desc: "Tenho prática, mas em menor escala.",
+        nivel: "ocasional",
+        status: "Completed",
         itens: [
           { nome: "Observabilidade (OpenTelemetry, Grafana)", chave: ["Grafana", "OpenTelemetry"] },
           { nome: "Redes (VLANs)", chave: ["VLAN"] },
@@ -309,7 +380,8 @@ window.SITE = {
       },
       {
         nome: "Estudando",
-        desc: "Em aprendizado agora.",
+        nivel: "estudando",
+        status: "Pending",
         itens: [
           { nome: "Kubernetes", chave: ["Kubernetes"] },
         ],
@@ -320,6 +392,7 @@ window.SITE = {
   // ---------- Experiência / Formação ----------
   experiencia: {
     titulo: "Formação & Trajetória",
+    comando: "$ git log --oneline",
     itens: [
       { periodo: "Formado", cargo: "Análise e Desenvolvimento de Sistemas", local: "Graduação", descricao: "Formação em desenvolvimento de sistemas; TCC: FinançasPro, aplicação fullstack com deploy automatizado na AWS." },
       { periodo: "Alura", cargo: "Site Reliability Engineering", local: "Curso", descricao: "Fundamentos de SRE: deploy, rollback, health checks, métricas e monitoramento." },
@@ -336,6 +409,7 @@ window.SITE = {
   // ---------- Contato ----------
   contato: {
     titulo: "Vamos conversar",
+    comando: "$ ssh gabriel@contato",
     texto: "Procurando alguém para automatizar infraestrutura, montar pipelines ou cuidar da confiabilidade dos seus sistemas? Me mande uma mensagem.",
     email: "stug9000@gmail.com",
     // Para o formulário enviar de verdade, crie um form em formspree.io e cole aqui
@@ -350,4 +424,10 @@ window.SITE = {
 
   rodape: "© " + new Date().getFullYear() + " Gabriel Stuginski Lima.",
   assinatura: "BY GABRIEL STUG",   // "" para ocultar
+  // Linhas de log decorativas no rodapé ([] para ocultar)
+  rodapeLog: [
+    "[INFO] build #142 passed",
+    "[INFO] uptime 99.9%",
+    "[OK] all systems operational",
+  ],
 };

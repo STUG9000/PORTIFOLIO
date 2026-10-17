@@ -24,13 +24,12 @@
 
   // ---------- Tema ----------
   const T = S.theme;
-  root.style.setProperty("--accent", T.accent);
-  root.style.setProperty("--accent2", T.accent2 || T.accent);
-  root.style.setProperty("--radius", T.radius);
-  if (T.font) {
-    document.head.append(h("link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(T.font).replace(/%20/g, "+") + ":wght@400;600;700;800&display=swap" }));
-    root.style.setProperty("--font", `"${T.font}", system-ui, sans-serif`);
-  }
+  if (T.radius) root.style.setProperty("--radius", T.radius);
+  const family = (f) => "family=" + encodeURIComponent(f).replace(/%20/g, "+") + ":wght@400;500;600;700;800";
+  const fams = [T.font, T.mono].filter(Boolean);
+  if (fams.length) document.head.append(h("link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?" + fams.map(family).join("&") + "&display=swap" }));
+  if (T.font) root.style.setProperty("--font", `"${T.font}", system-ui, sans-serif`);
+  if (T.mono) root.style.setProperty("--mono", `"${T.mono}", ui-monospace, "Cascadia Code", Consolas, monospace`);
   const media = matchMedia("(prefers-color-scheme: dark)");
   const resolve = (m) => (m === "auto" ? (media.matches ? "dark" : "light") : m);
   let stored = null;
@@ -47,7 +46,7 @@
   if (metaDesc) metaDesc.setAttribute("content", S.meta.description);
   const initial = (S.hero.nome || "P").trim()[0].toUpperCase();
   document.head.append(h("link", { rel: "icon", href: "data:image/svg+xml," + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="${T.accent}"/><text x="32" y="45" font-size="38" font-weight="800" text-anchor="middle" fill="#fff" font-family="sans-serif">${initial}</text></svg>`) }));
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="2" y="2" width="60" height="60" rx="12" fill="#0b0e14" stroke="#3fb950" stroke-width="4"/><text x="32" y="44" font-size="34" font-weight="700" text-anchor="middle" fill="#3fb950" font-family="monospace">${initial}</text></svg>`) }));
 
   // ---------- Utilidades ----------
   let toastTimer;
@@ -94,6 +93,48 @@
     return el;
   }
 
+  // Diagrama de arquitetura: etapas ligadas por setas.
+  function diagram(nodes) {
+    return h("div", { class: "arch", role: "img", "aria-label": "Arquitetura: " + nodes.map((n) => n.nome).join(" → ") },
+      nodes.map((n, k) => [
+        k > 0 && h("i", { class: "arch-arrow", "aria-hidden": "true" }),
+        h("div", { class: "arch-node", "aria-hidden": "true" },
+          h("span", { class: "arch-ico" }, icon(n.icone)),
+          h("b", {}, n.nome),
+          n.sub && h("small", {}, n.sub)),
+      ]));
+  }
+
+  const STATE_CLS = { deployed: "ok", "in progress": "warn", lab: "idle" };
+  const stateBadge = (s) => s && h("span", { class: "state " + (STATE_CLS[s] || "idle") }, s);
+
+  // Mini-gráfico de linha (sparkline). Sem série, gera um crescimento determinístico até o valor.
+  function sparkline(d) {
+    let pts = d.serie;
+    if (!pts || pts.length < 2) {
+      const n = 14, w = Array.from({ length: n }, (_, k) => 0.3 + Math.abs(Math.sin((k + 1) * 12.9898 + d.valor * 78.233)) % 1);
+      const sum = w.reduce((a, b) => a + b, 0);
+      let acc = 0;
+      pts = w.map((x) => (acc += (x / sum) * d.valor));
+    }
+    const max = Math.max(...pts), min = Math.min(0, ...pts), span = max - min || 1;
+    const xy = pts.map((v, k) => [(k / (pts.length - 1)) * 100, 28 - ((v - min) / span) * 24]);
+    const line = xy.map(([x, y], k) => (k ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1)).join(" ");
+    const el = h("span", { class: "spark", "aria-hidden": "true" });
+    el.innerHTML = `<svg viewBox="0 0 100 30" preserveAspectRatio="none"><path class="area" d="${line} L100 30 L0 30 Z"/><path class="line" d="${line}"/></svg>`;
+    return el;
+  }
+
+  // Realce simples de HCL para o bloco do topo.
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  function hcl(line) {
+    return esc(line)
+      .replace(/"[^"]*"/g, (m) => `\u0001${m}\u0002`)
+      .replace(/^(\s*)(resource|variable|output|module)\b/, '$1<span class="k">$2</span>')
+      .replace(/^(\s*)([a-z_]+)(\s*=)/, '$1<span class="a">$2</span>$3')
+      .replace(/\u0001([^\u0002]*)\u0002/g, '<span class="s">$1</span>');
+  }
+
   // Seções que dependem da API: ficam escondidas até haver conteúdo e somem se vazias.
   function renumber() {
     [...document.querySelectorAll("main > section[id]:not(.hero)")].filter((sec) => !sec.hidden).forEach((sec, n) => {
@@ -114,7 +155,9 @@
   function section(id, index, titulo, ...kids) {
     return h("section", { id },
       h("div", { class: "wrap" },
-        reveal(h("div", {}, h("div", { class: "eyebrow" }, String(index + 1).padStart(2, "0") + " — " + (S[id].rotulo || LABELS[id] || id)), h("h2", { class: "section-title" }, titulo))),
+        reveal(h("div", {},
+          h("div", { class: "eyebrow" }, String(index + 1).padStart(2, "0") + " — " + (S[id].comando ? titulo : S[id].rotulo || LABELS[id] || id)),
+          h("h2", { class: "section-title" }, S[id].comando || titulo))),
         ...kids));
   }
 
@@ -140,14 +183,14 @@
 
   function openProject(p, idx) {
     const d = p.detalhes || {};
-    const grad = p.cor ? `linear-gradient(135deg, ${p.cor[0]}, ${p.cor[1] || p.cor[0]})` : "";
     const imgsAll = [p.imagem, ...(d.galeria || [])].filter(Boolean);
+    const arch = p.diagrama && p.diagrama.length > 0;
     $("#modalBody").replaceChildren(
-      h("div", { class: "m-cover", style: grad ? `--g:${grad}` : null },
-        imgsAll.length ? buildGallery(imgsAll, p.nome) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
+      h("div", { class: "m-cover" + (imgsAll.length ? "" : " diagram") },
+        imgsAll.length ? buildGallery(imgsAll, p.nome) : arch ? diagram(p.diagrama) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
       h("div", { class: "m-body" },
-        h("h3", { id: "modalTitle" }, p.nome),
-        p.status && h("span", { class: "proj-status static" }, p.status),
+        h("div", { class: "m-title" }, h("h3", { id: "modalTitle" }, p.nome), stateBadge(p.estado)),
+        imgsAll.length > 0 && arch && h("div", { class: "m-arch" }, h("span", { class: "m-label" }, "# arquitetura"), diagram(p.diagrama)),
         (d.papel || d.ano) && h("div", { class: "m-meta" },
           d.papel && h("div", {}, "Função", h("b", {}, d.papel)),
           d.ano && h("div", {}, "Ano", h("b", {}, d.ano))),
@@ -173,18 +216,7 @@
   // ---------- Seções ----------
   const builders = {
     sobre(i) {
-      const c = S.sobre, H = S.hero;
-      const profile = h("div", { class: "card spot profile-card" },
-        h("div", { class: "banner" }),
-        h("div", { class: "profile-main" },
-          h("div", { class: "profile-avatar" }, H.foto ? h("img", { src: H.foto, alt: H.nome }) : h("span", {}, initial)),
-          h("div", { class: "profile-info" },
-            h("h3", {}, H.nome),
-            c.cargoAtual && h("p", { class: "headline" }, c.cargoAtual),
-            (c.localizacao || H.status) && h("p", { class: "loc" },
-              c.localizacao && h("span", {}, "📍 " + c.localizacao),
-              c.localizacao && H.status && h("span", { class: "sep" }, "•"),
-              H.status && h("span", { class: "avail" }, H.status)))));
+      const c = S.sobre;
       const t = c.terminal;
       let term = false;
       if (t && t.linhas && t.linhas.length > 0) {
@@ -198,14 +230,16 @@
 
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
           let started = false;
+          // As primeiras linhas já aparecem escritas; o resto é digitado ao entrar na tela.
+          const ready = Math.min(t.prontas || 0, t.linhas.length);
           const start = () => {
             if (started) return;
             started = true;
             // Reserva a altura final antes de limpar, para a caixa não crescer enquanto digita.
             body.style.minHeight = body.getBoundingClientRect().height + "px";
-            body.replaceChildren();
+            body.replaceChildren(...t.linhas.slice(0, ready).map((l) => h("span", { class: lineClass(l) }, l)));
 
-            let i = 0;
+            let i = ready;
             const nextLine = () => {
               if (i >= t.linhas.length) {
                 body.append(h("span", { class: "cmd" }, "$ ", h("i", { class: "term-cursor blink" })));
@@ -237,14 +271,18 @@
       }
 
       return section("sobre", i, c.titulo,
-        reveal(profile),
         h("div", { class: "about" },
           reveal(h("div", { class: "about-text" },
             c.texto.map((t2) => h("p", {}, t2)),
             c.cv && h("div", { class: "actions" }, h("a", { href: c.cv, class: "btn magnetic", download: "" }, "Baixar CV ↓"))), 1),
-          h("div", { class: "stats" }, c.destaques.map((d, k) =>
-            reveal(card("stat", h("b", { "data-count": d.valor, "data-suffix": d.sufixo || "" }, d.valor + (d.sufixo || "")), h("span", {}, d.rotulo)), k + 2))),
-          term));
+          term && reveal(term, 2)),
+        h("div", { class: "stats" }, c.destaques.map((d, k) =>
+          reveal(card("stat",
+            h("div", { class: "stat-head" }, h("code", {}, d.metrica || d.rotulo), h("span", { class: "stat-live" }, "● live")),
+            h("div", { class: "stat-val" },
+              h("b", { "data-count": d.valor, "data-suffix": d.sufixo || "" }, d.valor + (d.sufixo || "")),
+              h("span", {}, d.rotulo)),
+            sparkline(d)), k + 2))));
     },
 
     pipeline(i) {
@@ -274,7 +312,7 @@
       const lines = [];
       const print = (t) => {
         lines.push(t.replace(/\$SHA/g, sha(runNo)).replace(/\$PREV/g, sha(runNo - 1)).replace(/\$RUN/g, String(runNo)));
-        while (lines.length > 7) lines.shift();
+        while (lines.length > 6) lines.shift();
         const cls = { "✓": "ok", "✗": "err", "↩": "warn", "$": "cmd" };
         log.replaceChildren(...lines.map((l) => h("span", { class: cls[l[0]] || "info" }, l)));
       };
@@ -357,15 +395,17 @@
           .map((p, idx) => ({ p, idx }))
           .filter(({ p }) => !tag || (p.tags || []).includes(tag))
           .map(({ p, idx }, k) => {
-            const grad = p.cor ? `linear-gradient(135deg, ${p.cor[0]}, ${p.cor[1] || p.cor[0]})` : "";
-            const el = tilt(h("article", { class: "card spot project" + (p.destaque ? " featured" : ""), tabindex: 0, role: "button", "aria-label": "Abrir " + p.nome },
-              h("div", { class: "cover", style: grad ? `--g:${grad}` : null },
-                p.status && h("span", { class: "proj-status" }, p.status),
-                p.imagem ? h("img", { src: p.imagem, alt: p.nome, loading: "lazy" }) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
+            const stack = (p.detalhes && p.detalhes.stack) || p.tags || [];
+            const el = tilt(h("article", { class: "card spot project", tabindex: 0, role: "button", "aria-label": "Abrir " + p.nome },
+              h("div", { class: "cover" + (p.diagrama && p.diagrama.length ? " diagram" : "") },
+                p.diagrama && p.diagrama.length ? diagram(p.diagrama)
+                  : p.imagem ? h("img", { src: p.imagem, alt: p.nome, loading: "lazy" })
+                  : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
               h("div", { class: "body" },
-                h("h3", {}, p.nome),
+                h("div", { class: "proj-title" }, h("h3", {}, p.nome), stateBadge(p.estado)),
                 h("p", {}, p.descricao),
-                h("div", { class: "tags" }, (p.tags || []).map((x) => h("span", { class: "tag" }, x))))));
+                h("div", { class: "tags" }, stack.map((x) => h("span", { class: "tag" }, x))),
+                h("span", { class: "more" }, "ver detalhes →"))));
             el.onclick = () => openProject(p, idx);
             el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openProject(p, idx); } };
             return reveal(el, k);
@@ -452,16 +492,26 @@
       const usedIn = (keys) => projetos
         .map((p, idx) => ({ p, idx }))
         .filter(({ p }) => ((p.detalhes && p.detalhes.stack) || []).some((st) => (keys || []).some((k) => st.toLowerCase().includes(k.toLowerCase()))));
+      const ST_CLS = { Running: "ok", Pending: "warn", Completed: "idle" };
+      const rows = c.niveis.flatMap((n) => n.itens.map((sk) => {
+        const uses = usedIn(sk.chave);
+        return h("tr", {},
+          h("td", { class: "k-name" }, sk.nome),
+          h("td", { class: "k-level" }, n.nivel || n.nome),
+          h("td", {}, h("span", { class: "k-status " + (ST_CLS[n.status] || "idle") }, n.status || "Running")),
+          h("td", { class: "k-uses" }, uses.length ? uses.map(({ p, idx }) =>
+            h("button", { type: "button", class: "use-chip", title: "Ver " + p.nome, onclick: () => openProject(p, idx) }, p.nome)) : h("span", { class: "k-none" }, "<none>")));
+      }));
+      const count = (st) => c.niveis.filter((n) => n.status === st).reduce((a, n) => a + n.itens.length, 0);
+      const summary = Object.keys(ST_CLS).map((st) => count(st) && count(st) + " " + st).filter(Boolean).join(" · ");
       return section("habilidades", i, c.titulo,
-        h("div", { class: "skills" }, c.niveis.map((n, k) =>
-          reveal(card("skill-group level-" + k, h("h3", {}, n.nome), n.desc && h("p", { class: "lvl-desc" }, n.desc),
-            h("ul", { class: "skill-list" }, n.itens.map((sk) => {
-              const uses = usedIn(sk.chave);
-              return h("li", {},
-                h("b", {}, sk.nome),
-                uses.length > 0 && h("span", { class: "uses" }, "usado em ", uses.map(({ p, idx }) =>
-                  h("button", { type: "button", class: "use-chip", title: "Ver " + p.nome, onclick: () => openProject(p, idx) }, p.nome))));
-            }))), k))));
+        reveal(h("div", { class: "card kube" },
+          h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, "kubectl get skills -o wide")),
+          h("div", { class: "kube-scroll" },
+            h("table", {},
+              h("thead", {}, h("tr", {}, ["NAME", "LEVEL", "STATUS", "USED IN"].map((x) => h("th", { scope: "col" }, x)))),
+              h("tbody", {}, rows))),
+          h("p", { class: "kube-foot" }, summary))));
     },
 
     experiencia(i) {
@@ -494,11 +544,20 @@
 
     contato(i) {
       const c = S.contato;
-      const btn = h("button", { class: "btn primary magnetic", type: "submit" }, "Enviar mensagem →");
+      const SEND = "Enviar ↵";
+      const btn = h("button", { class: "btn primary magnetic", type: "submit" }, SEND);
       const field = (label, name, type, extra) => h("div", { class: "field" },
-        h("label", { for: "f-" + name }, label),
+        h("label", { for: "f-" + name }, h("span", { class: "flag" }, "-d "), name + "=", h("span", { class: "f-hint" }, "# " + label)),
         type === "textarea" ? h("textarea", { id: "f-" + name, name, rows: 5, required: true }) : h("input", { id: "f-" + name, name, type, required: true, ...extra }));
-      const form = h("form", { class: "card form", novalidate: false }, field("Nome", "nome", "text", { autocomplete: "name" }), field("E-mail", "email", "email", { autocomplete: "email" }), field("Mensagem", "mensagem", "textarea"), btn);
+      const endpoint = "stug9000.dev";
+      const form = h("form", { class: "card form", novalidate: false },
+        h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, "contato — zsh")),
+        h("div", { class: "form-body" },
+          h("p", { class: "curl" }, h("span", { class: "p" }, "$ "), "curl -X POST " + endpoint + "/contato \\"),
+          field("seu nome", "nome", "text", { autocomplete: "name" }),
+          field("seu e-mail", "email", "email", { autocomplete: "email" }),
+          field("sua mensagem", "mensagem", "textarea"),
+          btn));
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -511,9 +570,9 @@
         try {
           const r = await fetch(c.formEndpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) });
           if (!r.ok) throw new Error();
-          form.reset(); toast("Mensagem enviada. Obrigado!");
-        } catch (err) { toast("Não foi possível enviar. Tente pelo e-mail."); }
-        btn.disabled = false; btn.textContent = "Enviar mensagem →";
+          form.reset(); toast("HTTP 200 OK · mensagem enviada. Obrigado!");
+        } catch (err) { toast("HTTP 5xx · não foi possível enviar. Tente pelo e-mail."); }
+        btn.disabled = false; btn.textContent = SEND;
       });
 
       const mail = h("button", { class: "big-mail", type: "button", title: "Copiar e-mail" }, c.email);
@@ -535,19 +594,27 @@
   // ---------- Montagem ----------
   const main = $("#top");
   const H = S.hero;
+  const code = H.codigo;
   const hero = h("section", { id: "inicio", class: "hero" },
     h("div", { class: "wrap hero-grid" },
       h("div", { class: "hero-text" },
-        H.status && h("div", { class: "status" }, h("i"), H.status),
-        h("p", { class: "hi" }, H.saudacao),
+        h("div", { class: "hero-id" },
+          h("div", { class: "avatar" }, H.foto ? h("img", { src: H.foto, alt: H.nome }) : h("span", {}, initial)),
+          h("div", {},
+            H.status && h("div", { class: "status" }, h("i"), H.status),
+            h("p", { class: "hi" }, H.saudacao))),
         h("h1", { "aria-label": H.nome }, splitChars(H.nome)),
         h("p", { class: "role" }, h("span", { id: "typed" }), h("span", { class: "caret" })),
         h("p", { class: "lead" }, H.resumo),
         h("div", { class: "actions" }, H.botoes.map((b) => link(b.texto, b.link, "btn magnetic" + (b.primario ? " primary" : ""))))),
-      h("div", { class: "hero-visual" },
-        h("div", { class: "halo" }),
-        h("div", { class: "avatar" }, H.foto ? h("img", { src: H.foto, alt: H.nome }) : h("span", {}, initial)),
-        (H.badges || []).slice(0, 4).map((b) => h("span", { class: "badge" }, b)))),
+      code && code.linhas && h("div", { class: "card hero-code" },
+        h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, code.arquivo || "main.tf")),
+        (() => {
+          const pre = h("pre", { class: "hcl" });
+          pre.innerHTML = code.linhas.map((l, k) => `<span class="l"><span class="ln">${k + 1}</span>${hcl(l)}</span>`).join("");
+          return pre;
+        })(),
+        code.saida && h("div", { class: "hcl-out" }, h("span", { class: "p" }, "$ "), "terraform plan", h("br"), h("span", { class: "ok" }, code.saida)))),
     h("a", { class: "scroll-hint", href: "#" + (S.sections[0] || "sobre"), "aria-label": "Rolar para baixo" }, h("i"), "scroll"));
   main.append(hero);
 
@@ -564,6 +631,8 @@
   const nav = $("#nav");
   nav.append(...active.map((k) => link(S[k].menu || S[k].titulo, "#" + k)));
   $("#footer").append(
+    S.rodapeLog && S.rodapeLog.length > 0 && h("div", { class: "foot-log", "aria-hidden": "true" },
+      S.rodapeLog.map((l) => { const m = l.match(/^\[(\w+)\]\s*(.*)$/); return h("span", {}, m ? [h("b", { class: m[1].toLowerCase() }, "[" + m[1] + "]"), " " + m[2]] : l); })),
     h("span", {}, S.rodape),
     h("a", { class: "to-top", href: "#top" }, "↑ Voltar ao topo"),
     S.assinatura && h("span", { class: "assinatura" }, S.assinatura));
