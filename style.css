@@ -162,6 +162,7 @@ body.has-cursor #cursorGlow, body.has-cursor #cursorRing { opacity: 1; }
 .pl-comment { margin-left: 1rem; color: var(--comment); font-weight: 400; white-space: nowrap; }
 .section-title { font-family: var(--mono); font-weight: 700; font-size: clamp(1.45rem, 3.2vw, 2.2rem); letter-spacing: -.02em; color: var(--cyan); overflow-wrap: anywhere; }
 .section-title .pchar { color: var(--green); }
+.section-title .w { white-space: nowrap; }
 .section-title::after { content: ""; display: inline-block; width: .5em; height: .95em; margin-left: .25em; vertical-align: -.1em; background: var(--text); opacity: .85; animation: blink 1.1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
@@ -301,9 +302,6 @@ body.ready .ch { animation: rise .8s var(--ease) forwards; animation-delay: calc
 .state.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }
 .state.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); }
 .state.idle { color: var(--comment); background: color-mix(in srgb, var(--muted) 8%, transparent); }
-.badges { flex: none; display: inline-flex; align-items: center; gap: .45rem; }
-.kind { font-family: var(--mono); font-size: .7rem; color: var(--comment); white-space: nowrap; }
-.kind::before { content: "· "; }
 
 /* diagrama de arquitetura */
 .arch { display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -348,17 +346,36 @@ body.ready .ch { animation: rise .8s var(--ease) forwards; animation-delay: calc
 .use-chip:hover { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); }
 .kube-foot { padding: .7rem 1.2rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: .74rem; color: var(--comment); }
 
-/* ============ Experiência ============ */
-.timeline { position: relative; margin-left: .5rem; padding-left: 2.2rem; display: grid; gap: 1.6rem; }
-.timeline::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 1px; background: var(--border); }
-.timeline::after { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 1px; background: var(--yellow); transform-origin: top; transform: scaleY(var(--tl, 0)); }
-.job { position: relative; padding: 1.2rem 1.4rem; overflow: visible; }
-.job::before { content: ""; position: absolute; left: calc(-2.2rem - 5px); top: 1.6rem; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border); transition: .4s var(--ease); z-index: 3; }
-.job.on::before { border-color: var(--yellow); background: var(--yellow); }
-.job .when { color: var(--yellow); font-family: var(--mono); font-size: .76rem; font-weight: 600; }
-.job h3 { font-size: 1.15rem; margin: .25rem 0 .1rem; }
-.job .where { color: var(--blue); font-family: var(--mono); font-size: .8rem; }
-.job p.desc { margin-top: .6rem; color: var(--muted); font-size: .95rem; }
+/* ============ Trajetória: git log --oneline --graph ============ */
+.gitlog { background: var(--surface-2); --cols: 7ch 1.3ch 8.5ch minmax(0, 1fr); }
+.commits { list-style: none; margin: 0; padding: .9rem 1.2rem .6rem; font-family: var(--mono); font-size: .8rem; line-height: 1.55; }
+.commit { position: relative; padding-left: 1.5rem; }
+.commit::before { content: "*"; position: absolute; left: 0; top: .42rem; color: var(--magenta); font-weight: 700; }
+.commit::after { content: ""; position: absolute; left: .3em; top: 1.75rem; bottom: -.4rem; border-left: 1px solid var(--border); }
+.commit:last-child::after { display: none; }
+.c-line { display: grid; grid-template-columns: var(--cols); column-gap: .9rem; align-items: baseline; padding: .42rem .5rem; margin-left: -.5rem; border-radius: 6px; }
+summary.c-line { cursor: pointer; list-style: none; transition: background .15s; }
+summary.c-line::-webkit-details-marker { display: none; }
+summary.c-line:hover { background: color-mix(in srgb, var(--blue) 7%, transparent); }
+summary.c-line .c-msg::after { content: " ▸"; color: var(--comment); }
+details[open] > summary.c-line .c-msg::after { content: " ▾"; }
+.c-hash { color: var(--yellow); }
+.c-st { text-align: center; font-weight: 700; }
+.c-st.ok { color: var(--ok); }
+.c-st.fail { color: var(--bad); }
+.c-st.wip { color: var(--warn); }
+.c-date { color: var(--comment); white-space: nowrap; }
+.c-msg { color: var(--text); }
+.refs { color: var(--yellow); }
+.r-head { color: var(--cyan); font-weight: 700; }
+.r-branch { color: var(--green); font-weight: 700; }
+.r-tag { color: var(--green); font-weight: 700; }
+.r-other { color: var(--magenta); }
+.c-show { display: grid; grid-template-columns: var(--cols); column-gap: .9rem; padding: .1rem 0 .7rem; }
+.c-show > * { grid-column: 4; justify-self: start; }
+.c-show p { color: var(--muted); font-family: var(--font); font-size: .9rem; line-height: 1.55; margin-bottom: .5rem; }
+.gitlog-foot { padding: .6rem 1.2rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: .72rem; color: var(--comment); }
+.gitlog-foot::before { content: "# "; }
 
 /* ============ Depoimentos ============ */
 .quotes { display: grid; max-width: 760px; position: relative; }
@@ -566,6 +583,13 @@ footer { padding: 2rem 1.25rem; text-align: center; color: var(--muted); font-si
 }
 @media (max-width: 640px) {
   .pl-comment { display: none; }
+  /* git log: hash, status e data em cima, mensagem embaixo */
+  .gitlog { --cols: 7ch 1.3ch minmax(0, 1fr); }
+  .commits { font-size: .74rem; padding-inline: .9rem; }
+  .c-line { row-gap: .15rem; }
+  .c-msg { grid-column: 1 / -1; }
+  .c-show > * { grid-column: 1 / -1; }
+  .c-show p { font-size: .86rem; }
   .proj-title { flex-wrap: wrap; row-gap: .4rem; }
   .prompt { margin-bottom: 1.5rem; }
   .stats { grid-template-columns: 1fr; gap: .7rem; }

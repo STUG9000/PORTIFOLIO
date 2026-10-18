@@ -168,10 +168,10 @@
     document.addEventListener("mouseleave", () => { if (cur) resetTilt(cur); if (mag) resetMag(mag); cur = mag = null; });
   }
 
-  // ---------- Rolagem: progresso, nav, timeline, parallax ----------
+  // ---------- Rolagem: progresso, nav, parallax ----------
   function scrollFx(sectionIds) {
     const bar = document.documentElement, top = $("#topbar");
-    const links = $$("#nav a"), hero = $(".hero-grid"), tl = $(".timeline"), jobs = $$(".job");
+    const links = $$("#nav a"), hero = $(".hero-grid");
     const blobs = $$(".blob");
     let lastY = scrollY, ticking = false;
 
@@ -191,12 +191,6 @@
         hero.style.setProperty("--hy", (p * 20).toFixed(1) + "px");
       }
       if (!reduce && finePointer) blobs.forEach((b, i) => b.style.setProperty("translate", `0 ${y * (0.05 + i * 0.03) * -1}px`));
-
-      if (tl) {
-        const r = tl.getBoundingClientRect();
-        tl.style.setProperty("--tl", clamp((innerHeight * 0.6 - r.top) / r.height, 0, 1).toFixed(3));
-        jobs.forEach((j) => j.classList.toggle("on", j.getBoundingClientRect().top < innerHeight * 0.65));
-      }
     }
     addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     addEventListener("resize", update);

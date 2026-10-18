@@ -162,7 +162,6 @@ window.SITE = {
   // "diagrama": etapas da arquitetura, desenhadas no lugar do print quando
   // o projeto não tem "imagem". Mesmos ícones dos serviços.
   // "estado": badge do card — "deployed" (verde), "in progress" (amarelo) ou "lab" (cinza).
-  // "tipo" (opcional): texto ao lado do badge, ex.: "freelance".
   projetos: {
     titulo: "Projetos",
     dir: "~/projetos",
@@ -171,12 +170,11 @@ window.SITE = {
       {
         nome: "Kenedy Signato — Landing page",
         descricao: "Landing page para um produtor de conteúdo e gestor de tráfego com clientes no Brasil e nos EUA. Site estático, rápido e sem dependências, publicado na borda da Cloudflare e focado em converter visitas em conversas no WhatsApp.",
-        tags: ["Frontend", "Freelance"],
+        tags: ["Frontend"],
         link: "https://kenedysignato.com.br",
         repo: "",
         imagem: "",
         estado: "deployed",
-        tipo: "freelance",
         diagrama: [
           { icone: "git", nome: "GitHub", sub: "push na main" },
           { icone: "rocket", nome: "Cloudflare Pages", sub: "deploy automático" },
@@ -409,15 +407,38 @@ window.SITE = {
     ],
   },
 
-  // ---------- Experiência / Formação ----------
+  // ---------- Formação & Trajetória, como saída do git log ----------
+  // Do mais recente para o mais antigo (igual ao git log).
+  // "status": "ok" (✓ verde), "fail" (✗ vermelho) ou "wip" (● amarelo, em andamento).
+  // "refs": rótulos entre parênteses, ex.: "HEAD -> main", "tag: v1.0", "initial".
+  // "detalhe" e "projeto" (opcionais): aparecem ao clicar no commit, como um git show;
+  // "projeto" é o nome exato de um projeto da seção Projetos e vira um link para ele.
+  // O hash é gerado a partir da mensagem; para fixar um, use "hash".
   experiencia: {
     titulo: "Formação & Trajetória",
     dir: "~/trajetoria",
-    comando: "git log --oneline",
-    itens: [
-      { periodo: "Formado", cargo: "Análise e Desenvolvimento de Sistemas", local: "Graduação", descricao: "Formação em desenvolvimento de sistemas; TCC: FinançasPro, aplicação fullstack com deploy automatizado na AWS." },
-      { periodo: "Alura", cargo: "Site Reliability Engineering", local: "Curso", descricao: "Fundamentos de SRE: deploy, rollback, health checks, métricas e monitoramento." },
-      { periodo: "Contínuo", cargo: "Projetos de DevOps", local: "GitHub", descricao: "Laboratórios de IaC, CI/CD e automação com AWS, Terraform, Ansible e Docker." },
+    comando: "git log --oneline --graph",
+    commits: [
+      { refs: "HEAD -> main", status: "wip", data: "hoje", msg: "Estudando Docker Scout e Trivy; próximo passo: projeto prático com Kubernetes e observabilidade" },
+      { status: "ok", data: "set/2026", msg: "Kubernetes: orquestração, Pods, Services e ConfigMaps · formação DevOps concluída (224h)",
+        detalhe: "Orquestrar aplicações, escalabilidade e segurança (16h) e Pods, Services e ConfigMaps (8h), fechando as 224h da formação DevOps na Alura." },
+      { refs: "tag: v1.0", status: "ok", data: "jul/2026", msg: "Formado em Análise e Desenvolvimento de Sistemas · TCC FinançasPro com deploy na AWS",
+        detalhe: "TCC: FinançasPro, aplicação fullstack de finanças pessoais com deploy automatizado na AWS via CI/CD.", projeto: "FinançasPro" },
+      { status: "ok", data: "jul/2026", msg: "Checkpoint SRE Nível 1: deploy, rollback e monitoramento · observabilidade com OpenTelemetry e Grafana",
+        detalhe: "Checkpoint SRE - Nível 1 e Integrar métricas, logs e traces com OpenTelemetry e Grafana (8h).", projeto: "SRE Nível 1" },
+      { status: "ok", data: "jun/2026", msg: "CI/CD na AWS: deploy em EC2 e ECS, rollback e teste de carga",
+        detalhe: "Pipeline de entrega contínua na EC2, deploy automatizado no Amazon ECS e rollback com teste de carga (24h).", projeto: "DOCKER-CI" },
+      { status: "ok", data: "mai/2026", msg: "Redes: intranet, VLANs e políticas de acesso",
+        detalhe: "Dos conceitos iniciais à criação de uma intranet (12h) e projeto com VLANs, políticas de acesso e conexão com a internet (8h)." },
+      { status: "ok", data: "abr/2026", msg: "SRE e Entrega Contínua: confiabilidade, métricas e Error Budget",
+        detalhe: "SRE: confiabilidade dos sistemas, métricas, Error Budget e resiliência (18h); Entrega Contínua e GitHub Actions com segurança (16h)." },
+      { status: "ok", data: "fev/2026", msg: "Linux a fundo: terminal, usuários, permissões e processos",
+        detalhe: "Trilha Linux Onboarding e gerenciamento de diretórios, arquivos, permissões e processos (34h)." },
+      { status: "ok", data: "jan/2026", msg: "IaC com Terraform + Ansible e primeiros pipelines no GitHub Actions",
+        detalhe: "Máquinas na AWS com Ansible e Terraform (8h), Ansible como IaC (10h) e pipelines com testes e Docker no GitHub Actions (16h).", projeto: "IaC com Terraform + Ansible" },
+      { status: "ok", data: "nov/2025", msg: "Início da trilha DevOps: Linux, tráfego seguro, GitHub e Docker",
+        detalhe: "Linux CLI, tráfego seguro em comunicações web, repositórios no GitHub e containers com Docker (30h)." },
+      { refs: "initial", status: "fail", data: "nov/2024", msg: "Primeiro projeto da faculdade: cadastro em Node + MySQL. Não funcionou, mas foi onde tudo começou" },
     ],
   },
 

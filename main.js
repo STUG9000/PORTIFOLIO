@@ -108,8 +108,6 @@
 
   const STATE_CLS = { deployed: "ok", "in progress": "warn", lab: "idle" };
   const stateBadge = (s) => s && h("span", { class: "state " + (STATE_CLS[s] || "idle") }, s);
-  // Badge de estado + tipo opcional ("freelance"), como em "● deployed · freelance".
-  const projBadges = (p) => (p.estado || p.tipo) && h("span", { class: "badges" }, stateBadge(p.estado), p.tipo && h("span", { class: "kind" }, p.tipo));
 
   // Mini-gráfico de linha (sparkline). Sem série, gera um crescimento determinístico até o valor.
   function sparkline(d) {
@@ -155,7 +153,8 @@
             branch,
             h("span", { class: "pl-comment" }, "# ", h("span", { class: "pl-num" }, String(index + 1).padStart(2, "0")), " · " + label)),
           h("h2", { class: "section-title", "aria-label": titulo },
-            cmd ? [h("span", { class: "pchar", "aria-hidden": "true" }, "❯ "), cmd] : titulo))),
+            // cada palavra do comando fica inteira (não quebra "--graph" no meio)
+            cmd ? [h("span", { class: "pchar", "aria-hidden": "true" }, "❯ "), cmd.split(" ").map((w, k) => [k > 0 && " ", h("span", { class: "w" }, w)])] : titulo))),
         ...kids));
   }
 
@@ -187,7 +186,7 @@
       h("div", { class: "m-cover" + (imgsAll.length ? "" : " diagram") },
         imgsAll.length ? buildGallery(imgsAll, p.nome) : arch ? diagram(p.diagrama) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
       h("div", { class: "m-body" },
-        h("div", { class: "m-title" }, h("h3", { id: "modalTitle" }, p.nome), projBadges(p)),
+        h("div", { class: "m-title" }, h("h3", { id: "modalTitle" }, p.nome), stateBadge(p.estado)),
         imgsAll.length > 0 && arch && h("div", { class: "m-arch" }, h("span", { class: "m-label" }, "# arquitetura"), diagram(p.diagrama)),
         (d.papel || d.ano) && h("div", { class: "m-meta" },
           d.papel && h("div", {}, "Função", h("b", {}, d.papel)),
@@ -400,7 +399,7 @@
                   : p.imagem ? h("img", { src: p.imagem, alt: p.nome, loading: "lazy" })
                   : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
               h("div", { class: "body" },
-                h("div", { class: "proj-title" }, h("h3", {}, p.nome), projBadges(p)),
+                h("div", { class: "proj-title" }, h("h3", {}, p.nome), stateBadge(p.estado)),
                 h("p", {}, p.descricao),
                 h("div", { class: "tags" }, stack.map((x) => h("span", { class: "tag" }, x))),
                 h("span", { class: "more" }, "ver detalhes →"))));
@@ -450,9 +449,40 @@
 
     experiencia(i) {
       const c = S.experiencia;
+      const projetos = (S.projetos && S.projetos.itens) || [];
+      // Hash curto estável a partir da mensagem (FNV-1a), para parecer um commit de verdade.
+      const hashOf = (t) => { let x = 2166136261; for (const ch of t) x = Math.imul(x ^ ch.codePointAt(0), 16777619) >>> 0; return x.toString(16).padStart(8, "0").slice(0, 7); };
+      const ST = { ok: ["✓", "ok", "concluído"], fail: ["✗", "fail", "falhou"], wip: ["●", "wip", "em andamento"] };
+      const refs = (r) => r && h("span", { class: "refs" }, "(",
+        r.split(",").map((part, k) => {
+          const t = part.trim(), m = t.match(/^HEAD\s*->\s*(.+)$/);
+          return [k > 0 && ", ", m ? [h("span", { class: "r-head" }, "HEAD -> "), h("span", { class: "r-branch" }, m[1])]
+            : /^tag:/.test(t) ? h("span", { class: "r-tag" }, t) : h("span", { class: "r-other" }, t)];
+        }), ")");
+
+      const rows = c.commits.map((k) => {
+        const [mark, cls, label] = ST[k.status] || ST.ok;
+        const line = [
+          h("span", { class: "c-hash" }, k.hash || hashOf(k.msg)),
+          h("span", { class: "c-st " + cls, title: label }, mark),
+          h("span", { class: "c-date" }, k.data),
+          h("span", { class: "c-msg" }, refs(k.refs), k.refs ? " " : null, k.msg),
+        ];
+        const pIdx = k.projeto ? projetos.findIndex((p) => p.nome === k.projeto) : -1;
+        if (!k.detalhe && pIdx < 0) return h("li", { class: "commit" }, h("div", { class: "c-line" }, line));
+        return h("li", { class: "commit" },
+          h("details", {},
+            h("summary", { class: "c-line" }, line),
+            h("div", { class: "c-show" },
+              k.detalhe && h("p", {}, k.detalhe),
+              pIdx >= 0 && h("button", { type: "button", class: "use-chip", onclick: () => openProject(projetos[pIdx], pIdx) }, "→ " + projetos[pIdx].nome))));
+      });
+
       return section("experiencia", i, c.titulo,
-        h("div", { class: "timeline" }, c.itens.map((j, k) =>
-          reveal(card("job", h("div", { class: "when" }, j.periodo), h("h3", {}, j.cargo), h("div", { class: "where" }, j.local), h("p", { class: "desc" }, j.descricao)), k))));
+        reveal(h("div", { class: "card gitlog" },
+          h("div", { class: "term-head" }, h("span", { class: "dots" }, h("i"), h("i"), h("i")), h("code", {}, "~/trajetoria — zsh")),
+          h("ul", { class: "commits" }, rows),
+          h("p", { class: "gitlog-foot" }, "clique num commit para ver os detalhes (git show)"))));
     },
 
     depoimentos(i) {
