@@ -101,12 +101,15 @@
         h("div", { class: "arch-node", "aria-hidden": "true" },
           h("span", { class: "arch-ico" }, icon(n.icone)),
           h("b", {}, n.nome),
-          n.sub && h("small", {}, n.sub)),
+          // domínios quebram só depois do primeiro ponto (ex.: "site." / "com.br")
+          n.sub && h("small", {}, n.sub.includes(".") ? [n.sub.slice(0, n.sub.indexOf(".") + 1), h("wbr"), n.sub.slice(n.sub.indexOf(".") + 1)] : n.sub)),
       ]));
   }
 
   const STATE_CLS = { deployed: "ok", "in progress": "warn", lab: "idle" };
   const stateBadge = (s) => s && h("span", { class: "state " + (STATE_CLS[s] || "idle") }, s);
+  // Badge de estado + tipo opcional ("freelance"), como em "● deployed · freelance".
+  const projBadges = (p) => (p.estado || p.tipo) && h("span", { class: "badges" }, stateBadge(p.estado), p.tipo && h("span", { class: "kind" }, p.tipo));
 
   // Mini-gráfico de linha (sparkline). Sem série, gera um crescimento determinístico até o valor.
   function sparkline(d) {
@@ -135,22 +138,7 @@
       .replace(/\u0001([^\u0002]*)\u0002/g, '<span class="s">$1</span>');
   }
 
-  // Seções que dependem da API: ficam escondidas até haver conteúdo e somem se vazias.
-  function renumber() {
-    [...document.querySelectorAll("main > section[id]:not(.hero)")].filter((sec) => !sec.hidden).forEach((sec, n) => {
-      const e = sec.querySelector(".pl-num");
-      if (e) e.textContent = String(n + 1).padStart(2, "0");
-    });
-  }
-  function resolveSection(el, id, hasItems) {
-    if (hasItems) { el.hidden = false; renumber(); return; }
-    el.remove();
-    const a = $('#nav a[href="#' + id + '"]');
-    if (a) a.remove();
-    renumber();
-  }
-
-  const LABELS = { sobre: "Sobre", pipeline: "Pipeline", servicos: "Serviços", projetos: "Projetos", feed: "Feed", estudos: "Estudos", habilidades: "Skills", experiencia: "Trajetória", depoimentos: "Depoimentos", contato: "Contato" };
+  const LABELS = { sobre: "Sobre", pipeline: "Pipeline", servicos: "Serviços", projetos: "Projetos", habilidades: "Skills", experiencia: "Trajetória", depoimentos: "Depoimentos", contato: "Contato" };
 
   // Título de seção como prompt do Powerlevel10k: pílulas (usuário, diretório, branch) e o comando embaixo.
   const P = S.prompt || {};
@@ -199,7 +187,7 @@
       h("div", { class: "m-cover" + (imgsAll.length ? "" : " diagram") },
         imgsAll.length ? buildGallery(imgsAll, p.nome) : arch ? diagram(p.diagrama) : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
       h("div", { class: "m-body" },
-        h("div", { class: "m-title" }, h("h3", { id: "modalTitle" }, p.nome), stateBadge(p.estado)),
+        h("div", { class: "m-title" }, h("h3", { id: "modalTitle" }, p.nome), projBadges(p)),
         imgsAll.length > 0 && arch && h("div", { class: "m-arch" }, h("span", { class: "m-label" }, "# arquitetura"), diagram(p.diagrama)),
         (d.papel || d.ano) && h("div", { class: "m-meta" },
           d.papel && h("div", {}, "Função", h("b", {}, d.papel)),
@@ -412,7 +400,7 @@
                   : p.imagem ? h("img", { src: p.imagem, alt: p.nome, loading: "lazy" })
                   : h("span", { class: "num" }, String(idx + 1).padStart(2, "0"))),
               h("div", { class: "body" },
-                h("div", { class: "proj-title" }, h("h3", {}, p.nome), stateBadge(p.estado)),
+                h("div", { class: "proj-title" }, h("h3", {}, p.nome), projBadges(p)),
                 h("p", {}, p.descricao),
                 h("div", { class: "tags" }, stack.map((x) => h("span", { class: "tag" }, x))),
                 h("span", { class: "more" }, "ver detalhes →"))));
@@ -430,70 +418,6 @@
       }
       render("");
       return section("projetos", i, c.titulo, reveal(filters), grid);
-    },
-
-    feed(i) {
-      const c = S.feed;
-      const grid = h("div", { class: "feed-grid" });
-      const box = section("feed", i, c.titulo, grid);
-      box.hidden = true;
-
-      fetch("/api/posts").then((r) => (r.ok ? r.json() : [])).catch(() => []).then((posts) => {
-        if (!Array.isArray(posts) || !posts.length) { resolveSection(box, "feed", false); return; }
-        resolveSection(box, "feed", true);
-        grid.replaceChildren(...posts.map((p, k) => {
-          const grad = p.cor ? `linear-gradient(135deg, ${p.cor[0]}, ${p.cor[1] || p.cor[0]})` : "";
-          const imgs = (p.imagens || []).filter(Boolean);
-          const style = grad ? `--g:${grad}` : null;
-          let media;
-          if (!imgs.length) {
-            media = h("div", { class: "post-media", style }, h("span", { class: "post-ico" }, "📷"));
-          } else if (imgs.length === 1) {
-            media = h("div", { class: "post-media", style }, h("img", { src: imgs[0], alt: p.projeto || "", loading: "lazy" }));
-          } else {
-            const slides = imgs.map((src, n) => h("img", { src, alt: p.projeto || "", loading: "lazy", class: n === 0 ? "active" : "" }));
-            const dots = imgs.map((_, n) => h("button", { type: "button", "aria-label": "Foto " + (n + 1), class: n === 0 ? "active" : "" }));
-            media = h("div", { class: "post-media carousel", style }, ...slides, h("div", { class: "post-dots" }, dots));
-            let cur = 0, timer;
-            const go = (n) => { cur = (n + imgs.length) % imgs.length; slides.forEach((s, idx) => s.classList.toggle("active", idx === cur)); dots.forEach((d, idx) => d.classList.toggle("active", idx === cur)); };
-            dots.forEach((d, n) => d.onclick = () => { clearInterval(timer); go(n); timer = setInterval(() => go(cur + 1), 4000); });
-            timer = setInterval(() => go(cur + 1), 4000);
-          }
-          const el = tilt(card("post", media,
-            h("div", { class: "post-body" },
-              h("div", { class: "post-meta" }, p.data && h("time", {}, p.data), p.projeto && h("span", { class: "tag" }, p.projeto)),
-              h("p", {}, p.texto),
-              p.link && link("Ver mais ↗", p.link, "btn"))));
-          return reveal(el, k);
-        }));
-        window.FX.observe(grid);
-      });
-
-      return box;
-    },
-
-    estudos(i) {
-      const c = S.estudos;
-      const STATUS_CLS = { "Em andamento": "on", "Concluído": "done", "Planejado": "planned" };
-      const grid = h("div", { class: "study-grid" });
-      const box = section("estudos", i, c.titulo, grid);
-      box.hidden = true;
-
-      fetch("/api/estudos").then((r) => (r.ok ? r.json() : [])).catch(() => []).then((itens) => {
-        if (!Array.isArray(itens) || !itens.length) { resolveSection(box, "estudos", false); return; }
-        resolveSection(box, "estudos", true);
-        grid.replaceChildren(...itens.map((s, k) =>
-          reveal(tilt(card("study",
-            h("div", { class: "ico" }, icon(s.icone || "book")),
-            h("div", { class: "study-body" },
-              h("h3", {}, s.nome),
-              s.categoria && h("p", {}, s.categoria),
-              h("span", { class: "status " + (STATUS_CLS[s.status] || "on") }, s.status || "Em andamento"),
-              s.link && link("Ver ↗", s.link, "study-link")))), k)));
-        window.FX.observe(grid);
-      });
-
-      return box;
     },
 
     habilidades(i) {

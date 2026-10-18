@@ -36,7 +36,7 @@ window.SITE = {
 
   // Ordem e visibilidade das seções (apague uma linha para esconder)
   // "depoimentos" está fora até você ter depoimentos reais.
-  sections: ["sobre", "pipeline", "servicos", "projetos", "feed", "estudos", "habilidades", "experiencia", "contato"],
+  sections: ["sobre", "pipeline", "servicos", "projetos", "habilidades", "experiencia", "contato"],
 
   // ---------- Topo ----------
   hero: {
@@ -161,12 +161,37 @@ window.SITE = {
   // ---------- Projetos ----------
   // "diagrama": etapas da arquitetura, desenhadas no lugar do print quando
   // o projeto não tem "imagem". Mesmos ícones dos serviços.
-  // "estado": badge do card — "deployed" (verde), "in progress" (âmbar) ou "lab" (cinza).
+  // "estado": badge do card — "deployed" (verde), "in progress" (amarelo) ou "lab" (cinza).
+  // "tipo" (opcional): texto ao lado do badge, ex.: "freelance".
   projetos: {
     titulo: "Projetos",
     dir: "~/projetos",
     comando: "ls -la",
     itens: [
+      {
+        nome: "Kenedy Signato — Landing page",
+        descricao: "Landing page para um produtor de conteúdo e gestor de tráfego com clientes no Brasil e nos EUA. Site estático, rápido e sem dependências, publicado na borda da Cloudflare e focado em converter visitas em conversas no WhatsApp.",
+        tags: ["Frontend", "Freelance"],
+        link: "https://kenedysignato.com.br",
+        repo: "",
+        imagem: "",
+        estado: "deployed",
+        tipo: "freelance",
+        diagrama: [
+          { icone: "git", nome: "GitHub", sub: "push na main" },
+          { icone: "rocket", nome: "Cloudflare Pages", sub: "deploy automático" },
+          { icone: "shield", nome: "CDN + SSL", sub: "kenedysignato.com.br" },
+        ],
+        detalhes: {
+          papel: "Freelance",
+          longa: [
+            "Kenedy Signato trabalha com roteiro, edição de vídeo e tráfego pago e precisava de um site que apresentasse seus serviços e clientes e levasse o visitante direto para o WhatsApp.",
+            "Site estático, rápido e sem dependências, publicado na borda da Cloudflare: cada push na main dispara o deploy automático no Cloudflare Pages, e a CDN entrega o site com SSL no domínio próprio.",
+          ],
+          stack: ["HTML", "CSS", "JavaScript", "Cloudflare Pages", "CDN", "SEO"],
+          galeria: [],
+        },
+      },
       {
         nome: "Srta Executiva",
         descricao: "Sistema de gestão para um ateliê de costura real: pedidos em Kanban, relatórios e exportação em PDF/Excel. Deu origem à ideia do CosturaPro.",
@@ -338,26 +363,6 @@ window.SITE = {
     ],
   },
 
-  // ---------- Feed — fotos e posts sobre os projetos ----------
-  // Os posts em si NÃO se editam aqui: publique, edite e apague pelo
-  // painel /admin (peça a senha combinada com a IA). Aqui só o título
-  // do menu. Se não houver posts, a seção some sozinha.
-  feed: {
-    titulo: "Atualizações",
-    dir: "~/feed",
-    comando: "tail -f updates.log",
-    menu: "Feed",
-  },
-
-  // ---------- Estudando agora ----------
-  // Também gerenciado pelo painel /admin, junto com o feed.
-  estudos: {
-    titulo: "Estudando agora",
-    dir: "~/estudos",
-    comando: "./estudos --now",
-    menu: "Estudos",
-  },
-
   // ---------- Habilidades, como saída do kubectl get ----------
   // Cada nível vira um grupo de linhas na tabela. "status" é a coluna STATUS:
   // "Running" (verde), "Completed" (cinza) ou "Pending" (âmbar).
@@ -397,6 +402,8 @@ window.SITE = {
         status: "Pending",
         itens: [
           { nome: "Kubernetes", chave: ["Kubernetes"] },
+          { nome: "Docker Scout", chave: ["Docker Scout"] },
+          { nome: "Trivy", chave: ["Trivy"] },
         ],
       },
     ],

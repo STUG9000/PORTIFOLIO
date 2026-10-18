@@ -6,7 +6,6 @@
 :root {
   --bg: #1a1b26;
   --surface: #24283b;
-  --surface-solid: #24283b;
   --surface-2: #16161e;          /* corpo de terminais e diagramas */
   --border: #2f3549;
   --text: #c0caf5;
@@ -32,10 +31,6 @@
   --warn: var(--yellow);
   --bad: var(--red);
 
-  /* compatibilidade com o painel /admin */
-  --accent2: var(--blue);
-  --grad: var(--green);
-
   --radius: 10px;
   --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
@@ -45,7 +40,6 @@
 :root[data-mode="light"] {
   --bg: #e6e7ed;
   --surface: #f6f6f9;
-  --surface-solid: #f6f6f9;
   --surface-2: #ffffff;
   --border: #c8cad6;
   --text: #343b58;
@@ -307,6 +301,9 @@ body.ready .ch { animation: rise .8s var(--ease) forwards; animation-delay: calc
 .state.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 10%, transparent); }
 .state.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); }
 .state.idle { color: var(--comment); background: color-mix(in srgb, var(--muted) 8%, transparent); }
+.badges { flex: none; display: inline-flex; align-items: center; gap: .45rem; }
+.kind { font-family: var(--mono); font-size: .7rem; color: var(--comment); white-space: nowrap; }
+.kind::before { content: "· "; }
 
 /* diagrama de arquitetura */
 .arch { display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -329,35 +326,6 @@ body.ready .ch { animation: rise .8s var(--ease) forwards; animation-delay: calc
   .arch-node small { font-size: .52rem; }
   .arch-arrow { min-width: 6px; }
 }
-
-/* ============ Feed ============ */
-.feed-grid, .study-grid { display: grid; gap: 1.2rem; }
-.feed-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.post { display: flex; flex-direction: column; }
-.post-media { position: relative; aspect-ratio: 16 / 10; display: grid; place-items: center; background: var(--g, var(--surface-2)); font-size: 2rem; }
-.post-media img { width: 100%; height: 100%; object-fit: cover; }
-.post-media.carousel img { position: absolute; inset: 0; opacity: 0; transition: opacity .6s var(--ease); }
-.post-media.carousel img.active { opacity: 1; }
-.post-dots { position: absolute; z-index: 1; bottom: .7rem; left: 50%; translate: -50% 0; display: flex; gap: .4rem; }
-.post-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .5); cursor: pointer; transition: background .25s, scale .25s; }
-.post-dots button.active { background: #fff; scale: 1.35; }
-.post-body { padding: 1.2rem 1.3rem 1.4rem; display: grid; gap: .7rem; align-content: start; }
-.post-meta { display: flex; align-items: center; gap: .7rem; font-family: var(--mono); font-size: .74rem; color: var(--muted); }
-.post-body p { margin: 0; color: var(--text); line-height: 1.55; }
-.empty-state { grid-column: 1 / -1; color: var(--muted); font-style: italic; }
-
-/* ============ Estudando agora ============ */
-.study-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.study { padding: 1.3rem; display: flex; gap: .9rem; align-items: flex-start; }
-.study .ico { color: var(--blue); font-size: 1.3rem; flex: none; padding-top: .1rem; }
-.study-body h3 { margin: 0 0 .3rem; font-family: var(--mono); font-size: .95rem; }
-.study-body p { margin: 0 0 .6rem; color: var(--muted); font-size: .86rem; }
-.study-body .status { display: inline-block; font-family: var(--mono); font-size: .7rem; padding: .14rem .55rem; border-radius: 999px; border: 1px solid currentColor; }
-.study-body .status.on { color: var(--warn); }
-.study-body .status.done { color: var(--ok); }
-.study-body .status.planned { color: var(--comment); }
-.study-link { display: block; margin-top: .5rem; font-family: var(--mono); font-size: .78rem; color: var(--blue); text-decoration: none; }
-.study-link:hover { text-decoration: underline; }
 
 /* ============ Habilidades (kubectl get) ============ */
 .kube { background: var(--surface-2); }
@@ -598,6 +566,7 @@ footer { padding: 2rem 1.25rem; text-align: center; color: var(--muted); font-si
 }
 @media (max-width: 640px) {
   .pl-comment { display: none; }
+  .proj-title { flex-wrap: wrap; row-gap: .4rem; }
   .prompt { margin-bottom: 1.5rem; }
   .stats { grid-template-columns: 1fr; gap: .7rem; }
   .services { grid-template-columns: 1fr; }
